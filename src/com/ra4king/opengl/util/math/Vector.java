@@ -15,6 +15,8 @@ public interface Vector<V> {
 	
 	V divide(float f);
 	
+	V mod(float f);
+	
 	float length();
 	
 	V copy();

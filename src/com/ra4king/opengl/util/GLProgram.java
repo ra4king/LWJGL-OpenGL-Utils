@@ -8,8 +8,6 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
-import com.ra4king.opengl.util.Utils;
-
 public abstract class GLProgram {
 	private int fps;
 	

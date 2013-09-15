@@ -203,6 +203,16 @@ public class Vector4 implements Vector<Vector4> {
 		return divide(vec.x, vec.y, vec.z, vec.w);
 	}
 	
+	@Override
+	public Vector4 mod(float f) {
+		x %= f;
+		y %= f;
+		z %= f;
+		w %= f;
+		
+		return this;
+	}
+	
 	private final static FloatBuffer direct = BufferUtils.createFloatBuffer(4);
 	
 	@Override

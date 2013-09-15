@@ -157,6 +157,14 @@ public class Vector2 implements Vector<Vector2> {
 		return divide(vec.x, vec.y);
 	}
 	
+	@Override
+	public Vector2 mod(float f) {
+		x %= f;
+		y %= f;
+		
+		return this;
+	}
+	
 	private final static FloatBuffer direct = BufferUtils.createFloatBuffer(2);
 	
 	@Override

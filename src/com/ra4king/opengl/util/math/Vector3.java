@@ -184,6 +184,15 @@ public class Vector3 implements Vector<Vector3> {
 		return divide(vec.x, vec.y, vec.z);
 	}
 	
+	@Override
+	public Vector3 mod(float f) {
+		x %= f;
+		y %= f;
+		z %= f;
+		
+		return this;
+	}
+	
 	private final static FloatBuffer direct = BufferUtils.createFloatBuffer(3);
 	
 	@Override

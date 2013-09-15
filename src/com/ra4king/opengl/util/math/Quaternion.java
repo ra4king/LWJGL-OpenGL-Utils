@@ -135,11 +135,10 @@ public class Quaternion {
 	}
 	
 	public Vector3 mult(Vector3 v) {
-		Vector3 uv, uuv;
 		Vector3 quatVector = new Vector3(x, y, z);
 		
-		uv = quatVector.cross(v);
-		uuv = quatVector.cross(uv);
+		Vector3 uv = quatVector.cross(v);
+		Vector3 uuv = quatVector.cross(uv);
 		
 		uv.mult(w * 2);
 		uuv.mult(2);
@@ -167,6 +166,10 @@ public class Quaternion {
 		z *= -1;
 		
 		return this;
+	}
+	
+	public Quaternion inverse() {
+		return normalize().conjugate();
 	}
 	
 	public Matrix4 toMatrix() {
