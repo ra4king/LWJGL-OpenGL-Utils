@@ -165,6 +165,11 @@ public class Vector2 implements Vector<Vector2> {
 		return this;
 	}
 	
+	@Override
+	public String toString() {
+		return "(" + x + ", " + y + ")";
+	}
+	
 	private final static FloatBuffer direct = BufferUtils.createFloatBuffer(2);
 	
 	@Override

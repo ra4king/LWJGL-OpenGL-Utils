@@ -212,6 +212,11 @@ public class Vector4 implements Vector<Vector4> {
 		
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		return "(" + x + ", " + y + ", " + z + ", " + w + ")";
+	}
 	
 	private final static FloatBuffer direct = BufferUtils.createFloatBuffer(4);
 	

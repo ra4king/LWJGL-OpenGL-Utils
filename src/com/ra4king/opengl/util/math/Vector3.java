@@ -192,6 +192,11 @@ public class Vector3 implements Vector<Vector3> {
 		
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		return "(" + x + ", " + y + ", " + z + ")";
+	}
 	
 	private final static FloatBuffer direct = BufferUtils.createFloatBuffer(3);
 	

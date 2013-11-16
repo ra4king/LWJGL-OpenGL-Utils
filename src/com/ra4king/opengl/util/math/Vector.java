@@ -22,4 +22,7 @@ public interface Vector<V> {
 	V copy();
 	
 	FloatBuffer toBuffer();
+	
+	@Override
+	String toString();
 }

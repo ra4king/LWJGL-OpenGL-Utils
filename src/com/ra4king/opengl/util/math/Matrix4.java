@@ -69,8 +69,21 @@ public class Matrix4 {
 		return matrix[index];
 	}
 	
+	public float get(int col, int row) {
+		return get(col * 4 + row);
+	}
+	
 	public Vector4 getColumn(int index) {
-		return new Vector4(get(index * 4 + 0), get(index * 4 + 1), get(index * 4 + 2), get(index * 4 + 3));
+		return getColumn(index, null);
+	}
+	
+	public Vector4 getColumn(int index, Vector4 result) {
+		if(result == null)
+			result = new Vector4();
+		
+		result.set(get(index * 4 + 0), get(index * 4 + 1), get(index * 4 + 2), get(index * 4 + 3));
+		
+		return result;
 	}
 	
 	public Matrix4 put(int index, float f) {
@@ -131,17 +144,18 @@ public class Matrix4 {
 		return this;
 	}
 	
+	private static final float[] tempm = new float[16];
+	private static final float[] tempmOp = new float[16];
+	
 	public Matrix4 mult(float[] m) {
-		float[] newm = new float[matrix.length];
-		
 		for(int a = 0; a < matrix.length; a += 4) {
-			newm[a + 0] = get(0) * m[a] + get(4) * m[a + 1] + get(8) * m[a + 2] + get(12) * m[a + 3];
-			newm[a + 1] = get(1) * m[a] + get(5) * m[a + 1] + get(9) * m[a + 2] + get(13) * m[a + 3];
-			newm[a + 2] = get(2) * m[a] + get(6) * m[a + 1] + get(10) * m[a + 2] + get(14) * m[a + 3];
-			newm[a + 3] = get(3) * m[a] + get(7) * m[a + 1] + get(11) * m[a + 2] + get(15) * m[a + 3];
+			tempm[a + 0] = get(0) * m[a] + get(4) * m[a + 1] + get(8) * m[a + 2] + get(12) * m[a + 3];
+			tempm[a + 1] = get(1) * m[a] + get(5) * m[a + 1] + get(9) * m[a + 2] + get(13) * m[a + 3];
+			tempm[a + 2] = get(2) * m[a] + get(6) * m[a + 1] + get(10) * m[a + 2] + get(14) * m[a + 3];
+			tempm[a + 3] = get(3) * m[a] + get(7) * m[a + 1] + get(11) * m[a + 2] + get(15) * m[a + 3];
 		}
 		
-		set(newm);
+		set(tempm);
 		
 		return this;
 	}
@@ -150,15 +164,43 @@ public class Matrix4 {
 		return mult(m.matrix);
 	}
 	
+	public Vector3 mult(Vector3 vec) {
+		return mult(vec, null);
+	}
+	
+	public Vector3 mult(Vector3 vec, Vector3 result) {
+		return mult(vec, 1, result);
+	}
+	
+	public Vector3 mult(Vector3 vec, float w) {
+		return mult(vec, w, null);
+	}
+	
+	public Vector3 mult(Vector3 vec, float w, Vector3 result) {
+		if(result == null)
+			result = new Vector3();
+		
+		result.x(get(0) * vec.x() + get(4) * vec.y() + get(8) * vec.z() + get(12) * w);
+		result.y(get(1) * vec.x() + get(5) * vec.y() + get(9) * vec.z() + get(13) * w);
+		result.z(get(2) * vec.x() + get(6) * vec.y() + get(10) * vec.z() + get(14) * w);
+		
+		return result;
+	}
+	
 	public Vector4 mult(Vector4 vec) {
-		Vector4 v = new Vector4();
+		return mult(vec, null);
+	}
+	
+	public Vector4 mult(Vector4 vec, Vector4 result) {
+		if(result == null)
+			result = new Vector4();
 		
-		v.x(get(0) * vec.x() + get(4) * vec.y() + get(8) * vec.z() + get(12) * vec.w());
-		v.y(get(1) * vec.x() + get(5) * vec.y() + get(9) * vec.z() + get(13) * vec.w());
-		v.z(get(2) * vec.x() + get(6) * vec.y() + get(10) * vec.z() + get(14) * vec.w());
-		v.w(get(3) * vec.x() + get(7) * vec.y() + get(11) * vec.z() + get(15) * vec.w());
+		result.x(get(0) * vec.x() + get(4) * vec.y() + get(8) * vec.z() + get(12) * vec.w());
+		result.y(get(1) * vec.x() + get(5) * vec.y() + get(9) * vec.z() + get(13) * vec.w());
+		result.z(get(2) * vec.x() + get(6) * vec.y() + get(10) * vec.z() + get(14) * vec.w());
+		result.w(get(3) * vec.x() + get(7) * vec.y() + get(11) * vec.z() + get(15) * vec.w());
 		
-		return v;
+		return result;
 	}
 	
 	public Matrix4 transpose() {
@@ -190,18 +232,18 @@ public class Matrix4 {
 	}
 	
 	public Matrix4 translate(float x, float y, float z) {
-		float[] m = new float[matrix.length];
+		Arrays.fill(tempmOp, 0);
+
+		tempmOp[0] = 1;
+		tempmOp[5] = 1;
+		tempmOp[10] = 1;
+		tempmOp[15] = 1;
+
+		tempmOp[12] = x;
+		tempmOp[13] = y;
+		tempmOp[14] = z;
 		
-		m[0] = 1;
-		m[5] = 1;
-		m[10] = 1;
-		m[15] = 1;
-		
-		m[12] = x;
-		m[13] = y;
-		m[14] = z;
-		
-		return mult(m);
+		return mult(tempmOp);
 	}
 	
 	public Matrix4 translate(Vector3 vec) {
@@ -213,14 +255,14 @@ public class Matrix4 {
 	}
 	
 	public Matrix4 scale(float x, float y, float z) {
-		float[] m = new float[matrix.length];
+		Arrays.fill(tempmOp, 0);
+
+		tempmOp[0] = x;
+		tempmOp[5] = y;
+		tempmOp[10] = z;
+		tempmOp[15] = 1;
 		
-		m[0] = x;
-		m[5] = y;
-		m[10] = z;
-		m[15] = 1;
-		
-		return mult(m);
+		return mult(tempmOp);
 	}
 	
 	public Matrix4 scale(Vector3 vec) {
@@ -232,24 +274,28 @@ public class Matrix4 {
 		float sin = (float)Math.sin(angle);
 		float oneMinusCos = 1 - cos;
 		
-		Vector3 v = new Vector3(x, y, z).normalize();
+		float len = (float)Math.sqrt(x * x + y * y + z * z);
+		x /= len;
+		y /= len;
+		z /= len;
 		
-		float[] m = new float[matrix.length];
-		m[0] = v.x() * v.x() + (1 - v.x() * v.x()) * cos;
-		m[4] = v.x() * v.y() * oneMinusCos - v.z() * sin;
-		m[8] = v.x() * v.z() * oneMinusCos + v.y() * sin;
+		Arrays.fill(tempmOp, 0);
 		
-		m[1] = v.y() * v.x() * oneMinusCos + v.z() * sin;
-		m[5] = v.y() * v.y() + (1 - v.y() * v.y()) * cos;
-		m[9] = v.y() * v.z() * oneMinusCos - v.x() * sin;
+		tempmOp[0] = x * x + (1 - x * x) * cos;
+		tempmOp[4] = x * y * oneMinusCos - z * sin;
+		tempmOp[8] = x * z * oneMinusCos + y * sin;
 		
-		m[2] = v.z() * v.x() * oneMinusCos - v.y() * sin;
-		m[6] = v.z() * v.y() * oneMinusCos + v.x() * sin;
-		m[10] = v.z() * v.z() + (1 - v.z() * v.z()) * cos;
+		tempmOp[1] = y * x * oneMinusCos + z * sin;
+		tempmOp[5] = y * y + (1 - y * y) * cos;
+		tempmOp[9] = y * z * oneMinusCos - x * sin;
 		
-		m[15] = 1;
+		tempmOp[2] = z * x * oneMinusCos - y * sin;
+		tempmOp[6] = z * y * oneMinusCos + x * sin;
+		tempmOp[10] = z * z + (1 - z * z) * cos;
 		
-		return mult(m);
+		tempmOp[15] = 1;
+		
+		return mult(tempmOp);
 	}
 	
 	public Matrix4 rotate(float angle, Vector3 vec) {

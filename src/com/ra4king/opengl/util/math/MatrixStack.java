@@ -15,16 +15,19 @@ public class MatrixStack {
 		return current;
 	}
 	
-	public void setTop(Matrix4 m) {
+	public MatrixStack setTop(Matrix4 m) {
 		current = m;
+		return this;
 	}
 	
-	public void pushMatrix() {
+	public MatrixStack pushMatrix() {
 		stack.push(current);
 		current = new Matrix4(current);
+		return this;
 	}
 	
-	public void popMatrix() {
+	public MatrixStack popMatrix() {
 		current = stack.pop();
+		return this;
 	}
 }
