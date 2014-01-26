@@ -7,8 +7,13 @@ import org.lwjgl.BufferUtils;
 public class Vector2 implements Vector<Vector2> {
 	private float x, y;
 	
+	public static final Vector2 RIGHT = new Vector2(1, 0);
+	public static final Vector2 LEFT = new Vector2(-1, 0);
+	public static final Vector2 UP = new Vector2(0, 1);
+	public static final Vector2 DOWN = new Vector2(0, -1);
+	
 	public Vector2() {
-		set(0, 0);
+		this(0, 0);
 	}
 	
 	public Vector2(float v) {

@@ -195,10 +195,15 @@ public class Matrix4 {
 		if(result == null)
 			result = new Vector4();
 		
-		result.x(get(0) * vec.x() + get(4) * vec.y() + get(8) * vec.z() + get(12) * vec.w());
-		result.y(get(1) * vec.x() + get(5) * vec.y() + get(9) * vec.z() + get(13) * vec.w());
-		result.z(get(2) * vec.x() + get(6) * vec.y() + get(10) * vec.z() + get(14) * vec.w());
-		result.w(get(3) * vec.x() + get(7) * vec.y() + get(11) * vec.z() + get(15) * vec.w());
+		// result.x(get(0) * vec.x() + get(4) * vec.y() + get(8) * vec.z() + get(12) * vec.w());
+		// result.y(get(1) * vec.x() + get(5) * vec.y() + get(9) * vec.z() + get(13) * vec.w());
+		// result.z(get(2) * vec.x() + get(6) * vec.y() + get(10) * vec.z() + get(14) * vec.w());
+		// result.w(get(3) * vec.x() + get(7) * vec.y() + get(11) * vec.z() + get(15) * vec.w());
+		
+		result.x(matrix[0] * vec.x() + matrix[4] * vec.y() + matrix[8] * vec.z() + matrix[12] * vec.w());
+		result.y(matrix[1] * vec.x() + matrix[5] * vec.y() + matrix[9] * vec.z() + matrix[13] * vec.w());
+		result.z(matrix[2] * vec.x() + matrix[6] * vec.y() + matrix[10] * vec.z() + matrix[14] * vec.w());
+		result.w(matrix[3] * vec.x() + matrix[7] * vec.y() + matrix[11] * vec.z() + matrix[15] * vec.w());
 		
 		return result;
 	}
@@ -233,12 +238,12 @@ public class Matrix4 {
 	
 	public Matrix4 translate(float x, float y, float z) {
 		Arrays.fill(tempmOp, 0);
-
+		
 		tempmOp[0] = 1;
 		tempmOp[5] = 1;
 		tempmOp[10] = 1;
 		tempmOp[15] = 1;
-
+		
 		tempmOp[12] = x;
 		tempmOp[13] = y;
 		tempmOp[14] = z;
@@ -256,7 +261,7 @@ public class Matrix4 {
 	
 	public Matrix4 scale(float x, float y, float z) {
 		Arrays.fill(tempmOp, 0);
-
+		
 		tempmOp[0] = x;
 		tempmOp[5] = y;
 		tempmOp[10] = z;
@@ -281,17 +286,17 @@ public class Matrix4 {
 		
 		Arrays.fill(tempmOp, 0);
 		
-		tempmOp[0] = x * x + (1 - x * x) * cos;
+		tempmOp[0] = x * x * oneMinusCos + cos;
 		tempmOp[4] = x * y * oneMinusCos - z * sin;
 		tempmOp[8] = x * z * oneMinusCos + y * sin;
 		
 		tempmOp[1] = y * x * oneMinusCos + z * sin;
-		tempmOp[5] = y * y + (1 - y * y) * cos;
+		tempmOp[5] = y * y * oneMinusCos + cos;
 		tempmOp[9] = y * z * oneMinusCos - x * sin;
 		
 		tempmOp[2] = z * x * oneMinusCos - y * sin;
 		tempmOp[6] = z * y * oneMinusCos + x * sin;
-		tempmOp[10] = z * z + (1 - z * z) * cos;
+		tempmOp[10] = z * z * oneMinusCos + cos;
 		
 		tempmOp[15] = 1;
 		

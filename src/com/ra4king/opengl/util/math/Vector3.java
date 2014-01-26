@@ -7,6 +7,13 @@ import org.lwjgl.BufferUtils;
 public class Vector3 implements Vector<Vector3> {
 	private float x, y, z;
 	
+	public static final Vector3 RIGHT = new Vector3(1, 0, 0);
+	public static final Vector3 LEFT = new Vector3(-1, 0, 0);
+	public static final Vector3 UP = new Vector3(0, 1, 0);
+	public static final Vector3 DOWN = new Vector3(0, -1, 0);
+	public static final Vector3 FORWARD = new Vector3(0, 0, -1);
+	public static final Vector3 BACK = new Vector3(0, 0, 1);
+	
 	public Vector3() {
 		set(0, 0, 0);
 	}
@@ -192,7 +199,7 @@ public class Vector3 implements Vector<Vector3> {
 		
 		return this;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ")";
