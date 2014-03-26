@@ -97,6 +97,11 @@ public class Vector2 implements Vector<Vector2> {
 		return (float)Math.sqrt(x * x + y * y);
 	}
 	
+	@Override
+	public float lengthSquared() {
+		return x * x + y * y;
+	}
+	
 	public Vector2 normalize() {
 		float length = length();
 		x /= length;

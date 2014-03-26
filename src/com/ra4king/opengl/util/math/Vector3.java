@@ -84,6 +84,11 @@ public class Vector3 implements Vector<Vector3> {
 		return false;
 	}
 	
+	@Override
+	public int hashCode() {
+		return (int)(x * (2 << 4) + y * (2 << 2) + z);
+	}
+	
 	public Vector3 set(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
@@ -115,6 +120,11 @@ public class Vector3 implements Vector<Vector3> {
 	@Override
 	public float length() {
 		return (float)Math.sqrt(x * x + y * y + z * z);
+	}
+	
+	@Override
+	public float lengthSquared() {
+		return x * x + y * y + z * z;
 	}
 	
 	public Vector3 normalize() {

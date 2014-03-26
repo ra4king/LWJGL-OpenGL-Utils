@@ -19,6 +19,8 @@ public interface Vector<V> {
 	
 	float length();
 	
+	float lengthSquared();
+	
 	V copy();
 	
 	FloatBuffer toBuffer();

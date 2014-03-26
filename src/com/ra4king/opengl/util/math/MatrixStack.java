@@ -11,6 +11,12 @@ public class MatrixStack {
 		stack = new Stack<>();
 	}
 	
+	public MatrixStack clear() {
+		stack.clear();
+		current = null;
+		return this;
+	}
+	
 	public Matrix4 getTop() {
 		return current;
 	}

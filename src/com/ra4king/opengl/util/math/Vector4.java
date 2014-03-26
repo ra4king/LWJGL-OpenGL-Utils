@@ -135,6 +135,11 @@ public class Vector4 implements Vector<Vector4> {
 		return (float)Math.sqrt(x * x + y * y + z * z + w * w);
 	}
 	
+	@Override
+	public float lengthSquared() {
+		return x * x + y * y + z * z + w * w;
+	}
+	
 	public Vector4 normalize() {
 		float length = length();
 		x /= length;
