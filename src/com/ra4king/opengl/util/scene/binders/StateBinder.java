@@ -13,7 +13,7 @@ public interface StateBinder {
 }
 
 abstract class UniformBinderBase implements StateBinder {
-	private HashMap<ShaderProgram, Integer> programUniformLocation = new HashMap<>();
+	private HashMap<ShaderProgram,Integer> programUniformLocation = new HashMap<>();
 	
 	public void associateWithProgram(ShaderProgram program, String uniform) {
 		programUniformLocation.put(program, glGetUniformLocation(program.getProgram(), uniform));

@@ -4,7 +4,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 import com.ra4king.opengl.util.ShaderProgram;
 
-public class UniformFloatBinder extends UniformBinderBase{
+public class UniformFloatBinder extends UniformBinderBase {
 	private float value;
 	
 	public UniformFloatBinder() {}

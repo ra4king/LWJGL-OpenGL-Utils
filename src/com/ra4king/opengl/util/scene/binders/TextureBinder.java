@@ -4,8 +4,6 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL33.*;
 
-import org.lwjgl.opengl.NVVertexBufferUnifiedMemory;
-
 import com.ra4king.opengl.util.ShaderProgram;
 
 public class TextureBinder implements StateBinder {

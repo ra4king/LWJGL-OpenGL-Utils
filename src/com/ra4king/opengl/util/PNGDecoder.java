@@ -183,13 +183,13 @@ public class PNGDecoder {
 	 * </p>
 	 * 
 	 * @param r
-	 *            the red component of the color to make transparent
+	 *        the red component of the color to make transparent
 	 * @param g
-	 *            the green component of the color to make transparent
+	 *        the green component of the color to make transparent
 	 * @param b
-	 *            the blue component of the color to make transparent
+	 *        the blue component of the color to make transparent
 	 * @throws UnsupportedOperationException
-	 *             if the tRNS chunk data can't be set
+	 *         if the tRNS chunk data can't be set
 	 * @see #hasAlphaChannel()
 	 */
 	public void overwriteTRNS(byte r, byte g, byte b) {
@@ -213,10 +213,10 @@ public class PNGDecoder {
 	 * Computes the implemented format conversion for the desired format.
 	 * 
 	 * @param fmt
-	 *            the desired format
+	 *        the desired format
 	 * @return format which best matches the desired format
 	 * @throws UnsupportedOperationException
-	 *             if this PNG file can't be decoded
+	 *         if this PNG file can't be decoded
 	 */
 	public Format decideTextureFormat(Format fmt) {
 		switch(colorType) {
@@ -270,17 +270,17 @@ public class PNGDecoder {
 	 * the last line.
 	 * 
 	 * @param buffer
-	 *            the buffer
+	 *        the buffer
 	 * @param stride
-	 *            the stride in bytes from start of a line to start of the next line, can be negative.
+	 *        the stride in bytes from start of a line to start of the next line, can be negative.
 	 * @param fmt
-	 *            the target format into which the image should be decoded.
+	 *        the target format into which the image should be decoded.
 	 * @throws IOException
-	 *             if a read or data error occurred
+	 *         if a read or data error occurred
 	 * @throws IllegalArgumentException
-	 *             if the start position of a line falls outside the buffer
+	 *         if the start position of a line falls outside the buffer
 	 * @throws UnsupportedOperationException
-	 *             if the image can't be decoded into the desired format
+	 *         if the image can't be decoded into the desired format
 	 */
 	public void decode(ByteBuffer buffer, int stride, Format fmt) throws IOException {
 		final int offset = buffer.position();
@@ -403,17 +403,17 @@ public class PNGDecoder {
 	 * the first line.
 	 * 
 	 * @param buffer
-	 *            the buffer
+	 *        the buffer
 	 * @param stride
-	 *            the stride in bytes from start of a line to start of the next line, must be positive.
+	 *        the stride in bytes from start of a line to start of the next line, must be positive.
 	 * @param fmt
-	 *            the target format into which the image should be decoded.
+	 *        the target format into which the image should be decoded.
 	 * @throws IOException
-	 *             if a read or data error occurred
+	 *         if a read or data error occurred
 	 * @throws IllegalArgumentException
-	 *             if the start position of a line falls outside the buffer
+	 *         if the start position of a line falls outside the buffer
 	 * @throws UnsupportedOperationException
-	 *             if the image can't be decoded into the desired format
+	 *         if the image can't be decoded into the desired format
 	 */
 	public void decodeFlipped(ByteBuffer buffer, int stride, Format fmt) throws IOException {
 		if(stride <= 0) {
