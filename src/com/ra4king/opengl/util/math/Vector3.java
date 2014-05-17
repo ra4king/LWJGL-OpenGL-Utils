@@ -4,6 +4,9 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
+/**
+ * @author Roi Atalla
+ */
 public class Vector3 implements Vector<Vector3> {
 	private float x, y, z;
 	

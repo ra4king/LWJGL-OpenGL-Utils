@@ -8,6 +8,9 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
+/**
+ * @author Roi Atalla
+ */
 public class UniformBlockArray<T extends UniformBlockArray.UniformBlockObject> {
 	private final FloatBuffer storage;
 	private final int blockOffset;

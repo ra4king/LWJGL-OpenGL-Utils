@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import com.ra4king.opengl.util.math.Vector;
 
+/**
+ * @author Roi Atalla
+ */
 public class LinearInterpolatorVector<T extends Vector<T>> extends WeightedLinearInterpolatorVector<T> {
 	public void setValues(ArrayList<T> data) {
 		setValues(data, true);

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import com.ra4king.opengl.util.math.Vector;
 
+/**
+ * @author Roi Atalla
+ */
 public class ConstVelLinearInterpolatorVector<T extends Vector<T>> extends WeightedLinearInterpolatorVector<T> {
 	private float totalDist;
 	

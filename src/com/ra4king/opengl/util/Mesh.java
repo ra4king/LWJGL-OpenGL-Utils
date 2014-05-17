@@ -13,6 +13,9 @@ import org.lwjgl.opengl.APPLEVertexArrayObject;
 import org.lwjgl.opengl.ARBVertexArrayObject;
 import org.lwjgl.opengl.GLContext;
 
+/**
+ * @author Roi Atalla
+ */
 public class Mesh {
 	private final static boolean IS_MAC = System.getProperty("os.name").toLowerCase().contains("mac");
 	private final static boolean HAS_VAO = GLContext.getCapabilities().OpenGL30;

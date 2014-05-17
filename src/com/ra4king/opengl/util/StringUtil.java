@@ -3,7 +3,7 @@ package com.ra4king.opengl.util;
 import java.util.ArrayList;
 
 /**
- * @author ra4king
+ * @author Roi Atalla
  */
 public class StringUtil {
 	public static String[] split(String input, char delim) {

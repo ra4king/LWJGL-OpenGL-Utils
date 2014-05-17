@@ -36,7 +36,7 @@ import rosick.jglsdk.glimg.TextureGenerator;
 import rosick.jglsdk.glimg.TextureGenerator.ForcedConvertFlags;
 
 /**
- * @author ra4king
+ * @author Roi Atalla
  */
 public class Scene {
 	private HashMap<String,Mesh> meshes;

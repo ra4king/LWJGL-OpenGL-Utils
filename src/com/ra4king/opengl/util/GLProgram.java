@@ -8,6 +8,9 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
+/**
+ * @author Roi Atalla
+ */
 public abstract class GLProgram {
 	private int fps;
 	

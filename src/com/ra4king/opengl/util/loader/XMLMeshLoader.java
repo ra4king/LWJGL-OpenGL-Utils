@@ -19,7 +19,7 @@ import com.ra4king.opengl.util.Mesh.RenderCommand;
 import com.ra4king.opengl.util.StringUtil;
 
 /**
- * @author ra4king
+ * @author Roi Atalla
  */
 public class XMLMeshLoader {
 	private ArrayList<RenderCommand> renderCommands = new ArrayList<>();

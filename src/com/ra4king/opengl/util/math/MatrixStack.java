@@ -2,6 +2,9 @@ package com.ra4king.opengl.util.math;
 
 import java.util.Stack;
 
+/**
+ * @author Roi Atalla
+ */
 public class MatrixStack {
 	private Stack<Matrix4> stack;
 	private Matrix4 current;

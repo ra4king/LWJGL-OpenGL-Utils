@@ -6,6 +6,9 @@ import java.util.HashMap;
 
 import com.ra4king.opengl.util.ShaderProgram;
 
+/**
+ * @author Roi Atalla
+ */
 public interface StateBinder {
 	void bindState(ShaderProgram program);
 	

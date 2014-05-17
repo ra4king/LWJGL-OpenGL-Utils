@@ -5,6 +5,9 @@ import static org.lwjgl.opengl.GL20.*;
 import com.ra4king.opengl.util.ShaderProgram;
 import com.ra4king.opengl.util.math.Matrix4;
 
+/**
+ * @author Roi Atalla
+ */
 public class UniformMat4Binder extends UniformBinderBase {
 	private Matrix4 value = new Matrix4().clearToIdentity();
 	

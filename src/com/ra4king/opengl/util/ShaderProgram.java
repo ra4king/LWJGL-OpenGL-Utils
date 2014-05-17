@@ -7,6 +7,9 @@ import static org.lwjgl.opengl.GL32.*;
 
 import java.util.Map;
 
+/**
+ * @author Roi Atalla
+ */
 public class ShaderProgram {
 	private int program;
 	

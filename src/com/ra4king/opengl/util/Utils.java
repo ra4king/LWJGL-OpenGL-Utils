@@ -20,6 +20,9 @@ import com.ra4king.opengl.util.math.Vector2;
 import com.ra4king.opengl.util.math.Vector3;
 import com.ra4king.opengl.util.math.Vector4;
 
+/**
+ * @author Roi Atalla
+ */
 public class Utils {
 	public static void checkGLError(String event) {
 		int error;

@@ -5,6 +5,9 @@ import static org.lwjgl.opengl.GL20.*;
 import com.ra4king.opengl.util.ShaderProgram;
 import com.ra4king.opengl.util.math.Vector4;
 
+/**
+ * @author Roi Atalla
+ */
 public class UniformVec4Binder extends UniformBinderBase {
 	private Vector4 value = new Vector4();
 	

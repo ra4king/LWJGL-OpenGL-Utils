@@ -5,6 +5,9 @@ import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 
+/**
+ * @author Roi Atalla
+ */
 public class Matrix3 {
 	private float[] matrix;
 	

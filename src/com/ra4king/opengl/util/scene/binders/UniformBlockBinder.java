@@ -5,6 +5,9 @@ import static org.lwjgl.opengl.GL31.*;
 
 import com.ra4king.opengl.util.ShaderProgram;
 
+/**
+ * @author Roi Atalla
+ */
 public class UniformBlockBinder implements StateBinder {
 	public int blockIndex;
 	public int uniformBuffer;

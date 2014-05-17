@@ -2,6 +2,9 @@ package com.ra4king.opengl.util.interpolators;
 
 import java.util.ArrayList;
 
+/**
+ * @author Roi Atalla
+ */
 public class LinearInterpolatorf extends WeightedLinearInterpolatorf {
 	public void setValues(ArrayList<Float> data) {
 		setValues(data, true);

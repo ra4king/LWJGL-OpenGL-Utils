@@ -7,6 +7,9 @@ import com.ra4king.opengl.util.math.Quaternion;
 import com.ra4king.opengl.util.math.Vector2;
 import com.ra4king.opengl.util.math.Vector3;
 
+/**
+ * @author Roi Atalla
+ */
 public class MousePoles {
 	public enum MouseButton {
 		LEFT_BUTTON,

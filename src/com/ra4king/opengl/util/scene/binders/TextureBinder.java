@@ -6,6 +6,9 @@ import static org.lwjgl.opengl.GL33.*;
 
 import com.ra4king.opengl.util.ShaderProgram;
 
+/**
+ * @author Roi Atalla
+ */
 public class TextureBinder implements StateBinder {
 	public int texUnit;
 	public int texType = GL_TEXTURE_2D;

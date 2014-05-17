@@ -1,5 +1,8 @@
 package com.ra4king.opengl.util.math;
 
+/**
+ * @author Roi Atalla
+ */
 public class Quaternion {
 	private float x, y, z, w;
 	

@@ -1,5 +1,8 @@
 package com.ra4king.opengl.util;
 
+/**
+ * @author Roi Atalla
+ */
 public class Timer {
 	public enum Type {
 		LOOP,

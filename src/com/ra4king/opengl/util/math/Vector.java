@@ -2,6 +2,9 @@ package com.ra4king.opengl.util.math;
 
 import java.nio.FloatBuffer;
 
+/**
+ * @author Roi Atalla
+ */
 public interface Vector<V> {
 	V add(V v);
 	
