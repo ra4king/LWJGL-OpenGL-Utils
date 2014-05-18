@@ -1,0 +1,4 @@
+.idea/*
+out/*
+*.iml
+hs_err_pid*
