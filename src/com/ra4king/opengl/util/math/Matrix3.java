@@ -9,6 +9,7 @@ import org.lwjgl.BufferUtils;
  * @author Roi Atalla
  */
 public class Matrix3 {
+	private final static FloatBuffer direct = BufferUtils.createFloatBuffer(9);
 	private float[] matrix;
 	
 	public Matrix3() {
@@ -17,17 +18,17 @@ public class Matrix3 {
 	
 	public Matrix3(float[] m) {
 		this();
-		put(m);
+		set(m);
 	}
 	
 	public Matrix3(Matrix3 m) {
 		this();
-		put(m);
+		set(m);
 	}
 	
 	public Matrix3(Matrix4 m) {
 		this();
-		put(m);
+		set(m);
 	}
 	
 	public Matrix3 clear() {
@@ -55,7 +56,7 @@ public class Matrix3 {
 		return this;
 	}
 	
-	public Matrix3 put(float[] m) {
+	public Matrix3 set(float[] m) {
 		if(m.length < matrix.length)
 			throw new IllegalArgumentException("float array must have at least " + matrix.length + " values.");
 		
@@ -64,11 +65,11 @@ public class Matrix3 {
 		return this;
 	}
 	
-	public Matrix3 put(Matrix3 m) {
-		return put(m.matrix);
+	public Matrix3 set(Matrix3 m) {
+		return set(m.matrix);
 	}
 	
-	public Matrix3 put(Matrix4 m) {
+	public Matrix3 set(Matrix4 m) {
 		for(int a = 0; a < 3; a++) {
 			put(a * 3 + 0, m.get(a * 4 + 0));
 			put(a * 3 + 1, m.get(a * 4 + 1));
@@ -94,7 +95,7 @@ public class Matrix3 {
 			newm[a + 2] = get(2) * m[a] + get(5) * m[a + 1] + get(8) * m[a + 2];
 		}
 		
-		put(newm);
+		set(newm);
 		
 		return this;
 	}
@@ -104,13 +105,18 @@ public class Matrix3 {
 	}
 	
 	public Vector3 mult(Vector3 vec) {
-		Vector3 v = new Vector3();
+		return mult(vec, null);
+	}
+	
+	public Vector3 mult(Vector3 vec, Vector3 result) {
+		if(result == null)
+			result = new Vector3();
 		
-		v.x(get(0) * vec.x() + get(3) * vec.y() + get(6) * vec.z());
-		v.x(get(1) * vec.x() + get(4) * vec.y() + get(7) * vec.z());
-		v.x(get(2) * vec.x() + get(5) * vec.y() + get(8) * vec.z());
+		result.x(get(0) * vec.x() + get(3) * vec.y() + get(6) * vec.z());
+		result.y(get(1) * vec.x() + get(4) * vec.y() + get(7) * vec.z());
+		result.z(get(2) * vec.x() + get(5) * vec.y() + get(8) * vec.z());
 		
-		return v;
+		return result;
 	}
 	
 	public Matrix3 transpose() {
@@ -149,10 +155,8 @@ public class Matrix3 {
 		inv.put(7, -(get(0) * get(5) - get(2) * get(3)));
 		inv.put(8, +(get(0) * get(4) - get(1) * get(3)));
 		
-		return put(inv.transpose().mult(1 / determinant()));
+		return set(inv.transpose().mult(1 / determinant()));
 	}
-	
-	private final static FloatBuffer direct = BufferUtils.createFloatBuffer(9);
 	
 	public FloatBuffer toBuffer() {
 		direct.clear();
