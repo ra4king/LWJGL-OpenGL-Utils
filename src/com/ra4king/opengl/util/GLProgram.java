@@ -14,6 +14,8 @@ import org.lwjgl.opengl.PixelFormat;
 public abstract class GLProgram {
 	private int fps;
 	
+	private boolean printDebug;
+	
 	public GLProgram(boolean vsync) {
 		try {
 			Display.setFullscreen(true);
@@ -43,6 +45,14 @@ public abstract class GLProgram {
 	
 	public int getFPS() {
 		return fps;
+	}
+	
+	public void setPrintDebug(boolean printDebug) {
+		this.printDebug = printDebug;
+	}
+	
+	public boolean isPrintDebug() {
+		return printDebug;
 	}
 	
 	public final void run() {
@@ -102,7 +112,7 @@ public abstract class GLProgram {
 			lastTime = lastFPS = System.nanoTime();
 			int frames = 0;
 			
-			long updateTime = 0, renderTime = 0;
+			long updateTime = 0, renderTime = 0, glRenderTime = 0;
 			
 			while(!Display.isCloseRequested() && !shouldStop()) {
 				long deltaTime = System.nanoTime() - lastTime;
@@ -126,17 +136,25 @@ public abstract class GLProgram {
 				
 				initial = System.nanoTime();
 				render();
-				
-				Display.update();
 				renderTime += System.nanoTime() - initial;
-
+				
 				Utils.checkGLError("render");
+				
+				initial = System.nanoTime();
+				Display.update();
+				glRenderTime += System.nanoTime() - initial;
 				
 				frames++;
 				if(System.nanoTime() - lastFPS >= 1e9) {
-					System.out.println("FPS: ".concat(String.valueOf(frames)) + "\tUpdate: " + (updateTime / frames) + "ns/" + String.format("%.2fms", updateTime / (frames * 1e6)) + "\tRender: " + (renderTime / frames) + "ns/" + String.format("%.2fms", renderTime / (frames * 1e6)));
+					if(printDebug) {
+						System.out.printf("FPS: %d\tUpdate: %.2f ns/%.2f ms\tRender: %.2f ns/%.2f ms\tGL Render: %.2f ns/%.2f ms\n",
+								frames, (double)updateTime / frames, updateTime / (frames * 1e6),
+								(double)renderTime / frames, renderTime / (frames * 1e6),
+								(double)glRenderTime / frames, glRenderTime / (frames * 1e6));
+					}
+					
 					lastFPS += 1e9;
-					updateTime = renderTime = 0;
+					updateTime = renderTime = glRenderTime = 0;
 					
 					frames = 0;
 				}
