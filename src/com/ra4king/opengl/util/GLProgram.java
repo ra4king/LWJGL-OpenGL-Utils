@@ -147,7 +147,7 @@ public abstract class GLProgram {
 				frames++;
 				if(System.nanoTime() - lastFPS >= 1e9) {
 					if(printDebug) {
-						System.out.printf("FPS: %d\tUpdate: %.2f ns/%.2f ms\tRender: %.2f ns/%.2f ms\tGL Render: %.2f ns/%.2f ms\n",
+						System.out.printf("\nFPS: %d\tUpdate: %.1f ns/%.3f ms\tRender: %.1f ns/%.3f ms\tGL Render: %.1f ns/%.3f ms\n",
 								frames, (double)updateTime / frames, updateTime / (frames * 1e6),
 								(double)renderTime / frames, renderTime / (frames * 1e6),
 								(double)glRenderTime / frames, glRenderTime / (frames * 1e6));
