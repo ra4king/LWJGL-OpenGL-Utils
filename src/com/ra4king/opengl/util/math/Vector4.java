@@ -100,6 +100,10 @@ public class Vector4 implements Vector<Vector4> {
 		return false;
 	}
 	
+	public Vector4 set(float f) {
+		return set(f, f, f, f);
+	}
+	
 	public Vector4 set(float x, float y, float z, float w) {
 		this.x = x;
 		this.y = y;

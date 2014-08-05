@@ -1,17 +1,18 @@
 package com.ra4king.opengl.util.math;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * @author Roi Atalla
  */
 public class MatrixStack {
-	private Stack<Matrix4> stack;
+	private Deque<Matrix4> stack;
 	private Matrix4 current;
 	
 	public MatrixStack() {
 		current = new Matrix4().clearToIdentity();
-		stack = new Stack<>();
+		stack = new ArrayDeque<>();
 	}
 	
 	public MatrixStack clear() {

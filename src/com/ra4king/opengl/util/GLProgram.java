@@ -112,8 +112,6 @@ public abstract class GLProgram {
 			lastTime = lastFPS = System.nanoTime();
 			int frames = 0;
 			
-			long updateTime = 0, renderTime = 0, glRenderTime = 0;
-			
 			while(!Display.isCloseRequested() && !shouldStop()) {
 				long deltaTime = System.nanoTime() - lastTime;
 				lastTime += deltaTime;
@@ -128,33 +126,28 @@ public abstract class GLProgram {
 						keyReleased(Keyboard.getEventKey(), Keyboard.getEventCharacter());
 				}
 				
-				long initial = System.nanoTime();
+				Stopwatch.start("Update");
 				update(deltaTime);
-				updateTime += System.nanoTime() - initial;
+				Stopwatch.end();
 				
-				Utils.checkGLError("update");
-				
-				initial = System.nanoTime();
+				Stopwatch.start("Render");
 				render();
-				renderTime += System.nanoTime() - initial;
+				Stopwatch.stop();
+				
+				Stopwatch.start("Display.update()");
+				Display.update();
+				Stopwatch.stop();
 				
 				Utils.checkGLError("render");
-				
-				initial = System.nanoTime();
-				Display.update();
-				glRenderTime += System.nanoTime() - initial;
 				
 				frames++;
 				if(System.nanoTime() - lastFPS >= 1e9) {
 					if(printDebug) {
-						System.out.printf("\nFPS: %d\tUpdate: %.1f ns/%.3f ms\tRender: %.1f ns/%.3f ms\tGL Render: %.1f ns/%.3f ms\n",
-								frames, (double)updateTime / frames, updateTime / (frames * 1e6),
-								(double)renderTime / frames, renderTime / (frames * 1e6),
-								(double)glRenderTime / frames, glRenderTime / (frames * 1e6));
+						System.out.printf("\nFPS: %d\n", frames);
+						Stopwatch.print();
 					}
 					
 					lastFPS += 1e9;
-					updateTime = renderTime = glRenderTime = 0;
 					
 					frames = 0;
 				}

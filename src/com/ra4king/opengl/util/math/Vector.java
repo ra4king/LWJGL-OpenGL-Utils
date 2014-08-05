@@ -6,6 +6,8 @@ import java.nio.FloatBuffer;
  * @author Roi Atalla
  */
 public interface Vector<V> {
+	V set(float f);
+	
 	V add(V v);
 	
 	V sub(V v);

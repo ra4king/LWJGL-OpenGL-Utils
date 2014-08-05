@@ -72,6 +72,10 @@ public class Vector2 implements Vector<Vector2> {
 		return false;
 	}
 	
+	public Vector2 set(float f) {
+		return set(f, f);
+	}
+	
 	public Vector2 set(float x, float y) {
 		this.x = x;
 		this.y = y;

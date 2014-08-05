@@ -92,6 +92,10 @@ public class Vector3 implements Vector<Vector3> {
 		return (int)(x * (2 << 4) + y * (2 << 2) + z);
 	}
 	
+	public Vector3 set(float f) {
+		return set(f, f, f);
+	}
+	
 	public Vector3 set(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
