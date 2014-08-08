@@ -14,6 +14,8 @@
  *     * Neither the name of Matthias Mann nor the names of its contributors may
  *       be used to endorse or promote products derived from this software
  *       without specific prior written permission.
+ *     * Redistributions in source or binary form must keep the original package
+ *       and class name.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -40,7 +42,7 @@ import java.util.zip.Inflater;
 
 /**
  * A PNGDecoder. The slick PNG decoder is based on this class :)
- * 
+ *
  * @author Matthias Mann
  */
 public class PNGDecoder {
@@ -77,6 +79,7 @@ public class PNGDecoder {
 	private static final int PLTE = 0x504C5445;
 	private static final int tRNS = 0x74524E53;
 	private static final int IDAT = 0x49444154;
+	private static final int IEND = 0x49454E44;
 	
 	private static final byte COLOR_GREYSCALE = 0;
 	private static final byte COLOR_TRUECOLOR = 2;
@@ -146,7 +149,7 @@ public class PNGDecoder {
 	/**
 	 * Checks if the image has a real alpha channel.
 	 * This method does not check for the presence of a tRNS chunk.
-	 * 
+	 *
 	 * @return true if the image has an alpha channel
 	 * @see #hasAlpha()
 	 */
@@ -157,7 +160,7 @@ public class PNGDecoder {
 	/**
 	 * Checks if the image has transparency information either from
 	 * an alpha channel or from a tRNS chunk.
-	 * 
+	 *
 	 * @return true if the image has transparency
 	 * @see #hasAlphaChannel()
 	 * @see #overwriteTRNS(byte, byte, byte)
@@ -181,15 +184,11 @@ public class PNGDecoder {
 	 * <p>
 	 * Calling this method causes {@link #hasAlpha()} to return true.
 	 * </p>
-	 * 
-	 * @param r
-	 *        the red component of the color to make transparent
-	 * @param g
-	 *        the green component of the color to make transparent
-	 * @param b
-	 *        the blue component of the color to make transparent
-	 * @throws UnsupportedOperationException
-	 *         if the tRNS chunk data can't be set
+	 *
+	 * @param r the red component of the color to make transparent
+	 * @param g the green component of the color to make transparent
+	 * @param b the blue component of the color to make transparent
+	 * @throws UnsupportedOperationException if the tRNS chunk data can't be set
 	 * @see #hasAlphaChannel()
 	 */
 	public void overwriteTRNS(byte r, byte g, byte b) {
@@ -199,7 +198,8 @@ public class PNGDecoder {
 		byte[] pal = this.palette;
 		if(pal == null) {
 			transPixel = new byte[] { 0, r, 0, g, 0, b };
-		} else {
+		}
+		else {
 			paletteA = new byte[pal.length / 3];
 			for(int i = 0, j = 0; i < pal.length; i += 3, j++) {
 				if(pal[i] != r || pal[i + 1] != g || pal[i + 2] != b) {
@@ -211,12 +211,10 @@ public class PNGDecoder {
 	
 	/**
 	 * Computes the implemented format conversion for the desired format.
-	 * 
-	 * @param fmt
-	 *        the desired format
+	 *
+	 * @param fmt the desired format
 	 * @return format which best matches the desired format
-	 * @throws UnsupportedOperationException
-	 *         if this PNG file can't be decoded
+	 * @throws UnsupportedOperationException if this PNG file can't be decoded
 	 */
 	public Format decideTextureFormat(Format fmt) {
 		switch(colorType) {
@@ -268,19 +266,13 @@ public class PNGDecoder {
 	 * Decodes the image into the specified buffer. The first line is placed at
 	 * the current position. After decode the buffer position is at the end of
 	 * the last line.
-	 * 
-	 * @param buffer
-	 *        the buffer
-	 * @param stride
-	 *        the stride in bytes from start of a line to start of the next line, can be negative.
-	 * @param fmt
-	 *        the target format into which the image should be decoded.
-	 * @throws IOException
-	 *         if a read or data error occurred
-	 * @throws IllegalArgumentException
-	 *         if the start position of a line falls outside the buffer
-	 * @throws UnsupportedOperationException
-	 *         if the image can't be decoded into the desired format
+	 *
+	 * @param buffer the buffer
+	 * @param stride the stride in bytes from start of a line to start of the next line, can be negative.
+	 * @param fmt the target format into which the image should be decoded.
+	 * @throws IOException if a read or data error occurred
+	 * @throws IllegalArgumentException if the start position of a line falls outside the buffer
+	 * @throws UnsupportedOperationException if the image can't be decoded into the desired format
 	 */
 	public void decode(ByteBuffer buffer, int stride, Format fmt) throws IOException {
 		final int offset = buffer.position();
@@ -401,19 +393,13 @@ public class PNGDecoder {
 	 * Decodes the image into the specified buffer. The last line is placed at
 	 * the current position. After decode the buffer position is at the end of
 	 * the first line.
-	 * 
-	 * @param buffer
-	 *        the buffer
-	 * @param stride
-	 *        the stride in bytes from start of a line to start of the next line, must be positive.
-	 * @param fmt
-	 *        the target format into which the image should be decoded.
-	 * @throws IOException
-	 *         if a read or data error occurred
-	 * @throws IllegalArgumentException
-	 *         if the start position of a line falls outside the buffer
-	 * @throws UnsupportedOperationException
-	 *         if the image can't be decoded into the desired format
+	 *
+	 * @param buffer the buffer
+	 * @param stride the stride in bytes from start of a line to start of the next line, must be positive.
+	 * @param fmt the target format into which the image should be decoded.
+	 * @throws IOException if a read or data error occurred
+	 * @throws IllegalArgumentException if the start position of a line falls outside the buffer
+	 * @throws UnsupportedOperationException if the image can't be decoded into the desired format
 	 */
 	public void decodeFlipped(ByteBuffer buffer, int stride, Format fmt) throws IOException {
 		if(stride <= 0) {
@@ -445,7 +431,8 @@ public class PNGDecoder {
 				}
 				buffer.put(a).put(b).put(g).put(r);
 			}
-		} else {
+		}
+		else {
 			for(int i = 1, n = curLine.length; i < n; i += 3) {
 				buffer.put((byte)0xFF).put(curLine[i + 2]).put(curLine[i + 1]).put(curLine[i]);
 			}
@@ -467,7 +454,8 @@ public class PNGDecoder {
 				}
 				buffer.put(r).put(g).put(b).put(a);
 			}
-		} else {
+		}
+		else {
 			for(int i = 1, n = curLine.length; i < n; i += 3) {
 				buffer.put(curLine[i]).put(curLine[i + 1]).put(curLine[i + 2]).put((byte)0xFF);
 			}
@@ -489,7 +477,8 @@ public class PNGDecoder {
 				}
 				buffer.put(b).put(g).put(r).put(a);
 			}
-		} else {
+		}
+		else {
 			for(int i = 1, n = curLine.length; i < n; i += 3) {
 				buffer.put(curLine[i + 2]).put(curLine[i + 1]).put(curLine[i]).put((byte)0xFF);
 			}
@@ -524,7 +513,8 @@ public class PNGDecoder {
 				byte a = paletteA[idx];
 				buffer.put(a).put(b).put(g).put(r);
 			}
-		} else {
+		}
+		else {
 			for(int i = 1, n = curLine.length; i < n; i += 1) {
 				int idx = curLine[i] & 255;
 				byte r = palette[idx * 3 + 0];
@@ -546,7 +536,8 @@ public class PNGDecoder {
 				byte a = paletteA[idx];
 				buffer.put(r).put(g).put(b).put(a);
 			}
-		} else {
+		}
+		else {
 			for(int i = 1, n = curLine.length; i < n; i += 1) {
 				int idx = curLine[i] & 255;
 				byte r = palette[idx * 3 + 0];
@@ -568,7 +559,8 @@ public class PNGDecoder {
 				byte a = paletteA[idx];
 				buffer.put(b).put(g).put(r).put(a);
 			}
-		} else {
+		}
+		else {
 			for(int i = 1, n = curLine.length; i < n; i += 1) {
 				int idx = curLine[i] & 255;
 				byte r = palette[idx * 3 + 0];
@@ -661,6 +653,7 @@ public class PNGDecoder {
 	}
 	
 	private void unfilterUp(byte[] curLine, byte[] prevLine) {
+		final int bpp = this.bytesPerPixel;
 		for(int i = 1, n = curLine.length; i < n; ++i) {
 			curLine[i] += prevLine[i];
 		}
@@ -805,7 +798,8 @@ public class PNGDecoder {
 		if(chunkRemaining > 0) {
 			// just skip the rest and the CRC
 			skip(chunkRemaining + 4);
-		} else {
+		}
+		else {
 			readFully(buffer, 0, 4);
 			int expectedCrc = readInt(buffer, 0);
 			int computedCrc = (int)crc.getValue();
@@ -870,10 +864,12 @@ public class PNGDecoder {
 					}
 					if(inflater.needsInput()) {
 						refillInflater(inflater);
-					} else {
+					}
+					else {
 						throw new IOException("Can't inflate " + length + " bytes");
 					}
-				} else {
+				}
+				else {
 					offset += read;
 					length -= read;
 				}

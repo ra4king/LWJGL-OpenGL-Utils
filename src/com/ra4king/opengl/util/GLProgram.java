@@ -128,7 +128,7 @@ public abstract class GLProgram {
 				
 				Stopwatch.start("Update");
 				update(deltaTime);
-				Stopwatch.end();
+				Stopwatch.stop();
 				
 				Stopwatch.start("Render");
 				render();
