@@ -2,6 +2,7 @@ package com.ra4king.opengl.util;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.opengl.GL32.*;
 
@@ -30,15 +31,63 @@ public class ShaderProgram {
 		int gs = compileShader(geometryShader, GL_GEOMETRY_SHADER);
 		int fs = compileShader(fragmentShader, GL_FRAGMENT_SHADER);
 		
-		program = glCreateProgram();
+		program = compileProgram(vs, gs, fs, (int program) -> {
+			if(attributes != null)
+				for(int i : attributes.keySet())
+					glBindAttribLocation(program, i, attributes.get(i));
+		});
+		
+		glDeleteShader(vs);
+		if(gs != -1)
+			glDeleteShader(gs);
+		glDeleteShader(fs);
+	}
+	
+	public ShaderProgram(String vertexShader, String[] transformFeedbackVaryings, boolean interleaved) {
+		this(vertexShader, null, null, transformFeedbackVaryings, interleaved);
+	}
+	
+	public ShaderProgram(String vertexShader, Map<Integer,String> attributes, String[] transformFeedbackVaryings, boolean interleaved) {
+		this(vertexShader, null, attributes, transformFeedbackVaryings, interleaved);
+	}
+	
+	public ShaderProgram(String vertexShader, String geometryShader, String[] transformFeedbackVaryings, boolean interleaved) {
+		this(vertexShader, geometryShader, null, transformFeedbackVaryings, interleaved);
+	}
+	
+	public ShaderProgram(String vertexShader, String geometryShader, Map<Integer,String> attributes, String[] transformFeedbackVaryings, boolean interleaved) {
+		int vs = compileShader(vertexShader, GL_VERTEX_SHADER);
+		int gs = compileShader(geometryShader, GL_GEOMETRY_SHADER);
+		
+		program = compileProgram(vs, gs, -1, (int program) -> {
+			if(attributes != null)
+				for(int i : attributes.keySet())
+					glBindAttribLocation(program, i, attributes.get(i));
+			
+			if(transformFeedbackVaryings != null)
+				glTransformFeedbackVaryings(program, transformFeedbackVaryings, interleaved ? GL_INTERLEAVED_ATTRIBS : GL_SEPARATE_ATTRIBS);
+		});
+		
+		glDeleteShader(vs);
+		if(gs != -1)
+			glDeleteShader(gs);
+	}
+	
+	private static interface PreLinkOperations {
+		void preLink(int program);
+	}
+	
+	private static int compileProgram(int vs, int gs, int fs, PreLinkOperations preLink) {
+		int program = glCreateProgram();
+		
 		glAttachShader(program, vs);
 		if(gs != -1)
 			glAttachShader(program, gs);
-		glAttachShader(program, fs);
+		if(fs != -1)
+			glAttachShader(program, fs);
 		
-		if(attributes != null)
-			for(int i : attributes.keySet())
-				glBindAttribLocation(program, i, attributes.get(i));
+		if(preLink != null)
+			preLink.preLink(program);
 		
 		glLinkProgram(program);
 		
@@ -57,15 +106,13 @@ public class ShaderProgram {
 		glDetachShader(program, vs);
 		if(gs != -1)
 			glDetachShader(program, gs);
-		glDetachShader(program, fs);
+		if(fs != -1)
+			glDetachShader(program, fs);
 		
-		glDeleteShader(vs);
-		if(gs != -1)
-			glDeleteShader(gs);
-		glDeleteShader(fs);
+		return program;
 	}
 	
-	private int compileShader(String source, int type) {
+	private static int compileShader(String source, int type) {
 		if(source == null)
 			return -1;
 		
@@ -89,7 +136,7 @@ public class ShaderProgram {
 		return shader;
 	}
 	
-	private String getName(int shaderType) {
+	private static String getName(int shaderType) {
 		if(shaderType == GL_VERTEX_SHADER)
 			return "vertex";
 		if(shaderType == GL_GEOMETRY_SHADER)
