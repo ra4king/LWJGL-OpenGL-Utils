@@ -189,7 +189,6 @@ public abstract class GLProgram {
 	
 	public void destroy() {
 		Display.destroy();
-		System.exit(0);
 	}
 	
 	protected String readFromFile(String file) {

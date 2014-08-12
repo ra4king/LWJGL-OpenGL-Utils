@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.OpenGLException;
 
 import com.ra4king.opengl.util.MousePoles.MouseButton;
 import com.ra4king.opengl.util.MousePoles.MouseModifier;
@@ -27,7 +28,7 @@ public class Utils {
 	public static void checkGLError(String event) {
 		int error;
 		if((error = glGetError()) != GL_NO_ERROR)
-			throw new RuntimeException("OpenGL Error during " + event + ": " + gluErrorString(error));
+			throw new OpenGLException("OpenGL Error during " + event + ": " + gluErrorString(error));
 	}
 	
 	public static Quaternion angleAxisDeg(float angle, Vector3 vec) {
