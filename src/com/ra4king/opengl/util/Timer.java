@@ -4,13 +4,13 @@ package com.ra4king.opengl.util;
  * @author Roi Atalla
  */
 public class Timer {
-	public enum Type {
+	public static enum TimerType {
 		LOOP,
 		SINGLE,
 		INFINITE
 	}
 	
-	private Type type;
+	private TimerType type;
 	private float secDuration;
 	
 	private boolean hasUpdated;
@@ -22,14 +22,22 @@ public class Timer {
 	private long elapsedTime;
 	
 	public Timer() {
-		this(Type.INFINITE, 1);
+		this(TimerType.INFINITE, 1);
 	}
 	
-	public Timer(Type type, float duration) {
+	/**
+	 * Initializes the Timer with a type and duration
+	 * 
+	 * @param type The Type of the timer can be <code>TimerType.LOOP</code>, <code>TimerType.SINGLE</code>, or <code>TimerType.INFINITY</code>
+	 * @param duration The duration of the Timer specified as a <code>float</code> interpreted as seconds.
+	 *        If the Type is is <code>TimerType.INFINITE</code>, this value is meaningless.
+	 *        Otherwise, it must be a positive nonzero value.
+	 */
+	public Timer(TimerType type, float duration) {
 		this.type = type;
 		this.secDuration = duration;
 		
-		if(type != Type.INFINITE && duration <= 0)
+		if(type != TimerType.INFINITE && duration <= 0)
 			throw new IllegalArgumentException("duration cannot be less than or equal to 0");
 	}
 	
@@ -38,6 +46,11 @@ public class Timer {
 		secAccumTime = 0;
 	}
 	
+	/**
+	 * Toggles pause/resume and returns the new state
+	 * 
+	 * @return <code>True</code> if paused, otherwise <code>false</code>
+	 */
 	public boolean togglePause() {
 		isPaused = !isPaused;
 		return isPaused;
@@ -51,6 +64,12 @@ public class Timer {
 		isPaused = pause;
 	}
 	
+	/**
+	 * Updates the timer.
+	 * 
+	 * @param deltaTime Amount of time in nanoseconds since the last call to this method.
+	 * @return <code>True</code> if the Timer is completed, otherwise <code>false</code> if the Timer is still in progress.
+	 */
 	public boolean update(long deltaTime) {
 		elapsedTime += deltaTime;
 		
@@ -71,22 +90,38 @@ public class Timer {
 		
 		absPrevTime = currTime;
 		
-		if(type == Type.SINGLE)
-			return secAccumTime > secDuration;
-		
-		return false;
+		return type == TimerType.SINGLE && secAccumTime > secDuration;
 	}
 	
+	/**
+	 * Rewinds the Timer. Could also fast forward the Timer if given a negative value.
+	 * 
+	 * @param secRewind Amount of time in seconds.
+	 */
 	public void rewind(float secRewind) {
 		secAccumTime -= secRewind;
 		if(secAccumTime < 0)
 			secAccumTime = 0;
 	}
 	
-	public void fastForward(float secFF) {
-		secAccumTime += secFF;
+	/**
+	 * Fast forward the Timer. Equivalent to <code>rewind(-secFastForward)</code>.
+	 * 
+	 * @param secFastForward Amount of time in seconds.
+	 */
+	public void fastForward(float secFastForward) {
+		rewind(-secFastForward);
 	}
 	
+	/**
+	 * The Alpha is a floating-point value that represents the ratio of the time passed to the duration time.
+	 * Equivalent to <code>getProgression() / timerDuration</code> (except for <code>TimerType.INFINITY</code>).
+	 * 
+	 * @return For <code>TimerType.SINGLE</code>, it returns a value between 0.0f and 1.0f (inclusive) where 0.0f is no time
+	 *         passed and 1.0f is the Timer completed.
+	 *         For <code>TimerType.LOOP</code>, it returns a value equivalent to <code>timePassed / timerDuration</code>.
+	 *         For <code>TimerType.INFINITY</code>, it returns -1f.
+	 */
 	public float getAlpha() {
 		switch(type) {
 			case LOOP:
@@ -99,6 +134,11 @@ public class Timer {
 		}
 	}
 	
+	/**
+	 * A floating-point value interpreted as seconds.
+	 * 
+	 * @return The amount of seconds passed since the start of the Timer.
+	 */
 	public float getProgression() {
 		switch(type) {
 			case LOOP:
@@ -111,6 +151,10 @@ public class Timer {
 		}
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public float getTimeSinceStart() {
 		return secAccumTime;
 	}

@@ -9,6 +9,8 @@ import com.ra4king.opengl.util.math.Vector3;
 
 /**
  * @author Roi Atalla
+ * 
+ *         This ugly mess of code was
  */
 public class MousePoles {
 	public enum MouseButton {
