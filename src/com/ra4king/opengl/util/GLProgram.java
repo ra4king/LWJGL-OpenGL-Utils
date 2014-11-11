@@ -144,7 +144,7 @@ public abstract class GLProgram {
 				if(System.nanoTime() - lastFPS >= 1e9) {
 					if(printDebug) {
 						System.out.printf("\nFPS: %d\n", frames);
-						Stopwatch.print();
+						Stopwatch.print(System.out);
 					}
 					
 					lastFPS += 1e9;

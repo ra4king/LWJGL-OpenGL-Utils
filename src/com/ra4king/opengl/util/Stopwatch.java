@@ -1,5 +1,6 @@
 package com.ra4king.opengl.util;
 
+import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -112,15 +113,17 @@ public class Stopwatch {
 	 * 
 	 * Throws IllegalStateException if there is no current timer.
 	 */
-	public static void stopAndPrint() {
+	public static void stopAndPrint(PrintStream writer) {
 		TimePeriod timePeriod = null;
 		if(!stackTimePeriods.isEmpty())
 			timePeriod = stackTimePeriods.getFirst();
 		
 		stop();
 		
-		if(timePeriod != null)
-			print(timePeriod);
+		if(timePeriod != null) {
+			print(writer, timePeriod);
+			reset(timePeriod);
+		}
 	}
 	
 	private static void endTimer(TimePeriod timePeriod) {
@@ -135,40 +138,71 @@ public class Stopwatch {
 		}
 	}
 	
-	public static void print() {
-		print(orderedTimePeriods, 0);
+	public static void print(PrintStream writer) {
+		print(writer, orderedTimePeriods, 0);
 	}
 	
-	private static void print(List<TimePeriod> timePeriods, int offset) {
+	private static void print(PrintStream writer, List<TimePeriod> timePeriods, int offset) {
 		for(TimePeriod timePeriod : timePeriods) {
 			int childOffset;
 			
 			if(timePeriod.count > 0) {
 				for(int a = 0; a < offset; a++)
-					System.out.print("  ");
+					writer.print("  ");
 				
-				print(timePeriod);
+				print(writer, timePeriod);
 				
 				childOffset = offset + 1;
 			}
 			else {
-				// System.out.printf("%s: never timed\n", timePeriod.name);
+				// writer.printf("%s: never timed\n", timePeriod.name);
 				
 				childOffset = offset;
 			}
 			
+			reset(timePeriod);
+			
 			if(!timePeriod.children.isEmpty()) {
-				print(timePeriod.children, childOffset);
+				print(writer, timePeriod.children, childOffset);
 			}
 		}
 	}
 	
-	private static void print(TimePeriod timePeriod) {
-		System.out.printf("%s: %.3f, %d, %.3f\n", timePeriod.name,
+	private static void print(PrintStream writer, TimePeriod timePeriod) {
+		writer.printf("%s: %.3f, %d, %.3f\n", timePeriod.name,
 				timePeriod.totalTime / (1e6 * timePeriod.count), timePeriod.count, timePeriod.totalTime / 1e6);
-		
+	}
+	
+	private static void reset(TimePeriod timePeriod) {
+		timePeriod.lastTotalTime = timePeriod.totalTime;
 		timePeriod.totalTime = 0;
+		
+		timePeriod.lastCount = timePeriod.count;
 		timePeriod.count = 0;
+	}
+	
+	/**
+	 * Gets the average time per frame
+	 * 
+	 * @param name The name of the time period
+	 * @return The amount of time per frame, in seconds.
+	 */
+	public static double getTimePerFrame(String name) {
+		TimePeriod period = allTimePeriods.get(name);
+		
+		return period.lastTotalTime / (1e6 * period.lastCount);
+	}
+	
+	public static double getTotalFrames(String name) {
+		TimePeriod period = allTimePeriods.get(name);
+		
+		return period.lastCount;
+	}
+	
+	public static double getTotalTime(String name) {
+		TimePeriod period = allTimePeriods.get(name);
+		
+		return period.lastTotalTime / 1e6;
 	}
 	
 	private static class TimePeriod {
@@ -177,6 +211,9 @@ public class Stopwatch {
 		long lastStartTime;
 		long totalTime;
 		int count;
+		
+		long lastTotalTime = -1;
+		int lastCount = -1;
 		
 		List<TimePeriod> children = new ArrayList<>();
 		
