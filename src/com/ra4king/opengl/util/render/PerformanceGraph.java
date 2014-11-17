@@ -5,11 +5,11 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 
 import java.nio.FloatBuffer;
+import java.util.function.Supplier;
 
 import org.lwjgl.BufferUtils;
 
 import com.ra4king.opengl.util.ShaderProgram;
-import com.ra4king.opengl.util.Stopwatch;
 import com.ra4king.opengl.util.Utils;
 import com.ra4king.opengl.util.math.Matrix4;
 import com.ra4king.opengl.util.math.Vector4;
@@ -18,12 +18,13 @@ import com.ra4king.opengl.util.math.Vector4;
  * @author Roi Atalla
  */
 public class PerformanceGraph {
-	private String stopWatchName;
+	private Supplier<? extends Number> stepValueSupplier;
 	private float maxValue;
 	
 	private int x, y;
 	private int width, height;
-	private int maxSteps, stepWidth;
+	private int maxSteps;
+	private int stepWidth;
 	
 	private Vector4 color;
 	
@@ -37,8 +38,8 @@ public class PerformanceGraph {
 	/**
 	 * Creates a PerformanceGraph at location (x,y) with size (maxSteps*stepWidth, graphHeight).
 	 * The origin (0,0) is at the top left corner of the window.
-	 * 
-	 * @param stopWatchName The name of the Stopwatch timer.
+	 *
+	 * @param stepValueSupplier The Supplier of the values of each step
 	 * @param maxValue The value to represent as 100%
 	 * @param x The left side of the graph
 	 * @param y The top of the graph
@@ -47,39 +48,36 @@ public class PerformanceGraph {
 	 * @param graphHeight The height of the graph
 	 * @param color The color of the graph
 	 */
-	public PerformanceGraph(String stopWatchName, float maxValue, int x, int y, int maxSteps, int stepWidth, int graphHeight, Vector4 color) {
-		this.stopWatchName = stopWatchName;
-		this.maxValue = maxValue;
+	public PerformanceGraph(float maxValue, int x, int y, int maxSteps, int stepWidth, int graphHeight, Vector4 color, Supplier<? extends Number> stepValueSupplier) {
+		this.stepValueSupplier = stepValueSupplier;
+		setMaxValue(maxValue);
 		
-		this.x = x;
-		this.y = y;
+		setX(x);
+		setY(y);
 		this.width = maxSteps * stepWidth;
 		this.height = graphHeight;
 		this.maxSteps = maxSteps;
 		this.stepWidth = stepWidth;
 		
-		this.color = color.copy();
-		
 		init();
+		
+		this.setColor(color);
 	}
 	
 	private void init() {
-		uiProgram = new ShaderProgram(Utils.readFully(getClass().getResourceAsStream(RenderUtils.SHADERS_PATH + "perf_graph.vert")),
-				Utils.readFully(getClass().getResourceAsStream(RenderUtils.SHADERS_PATH + "perf_graph.frag")));
-		
 		vao = RenderUtils.glGenVertexArrays();
 		RenderUtils.glBindVertexArray(vao);
 		
 		float[] graph = {
-				x, y,
-				x, y + height,
-				x, y,
-				x + width, y
+				getX(), getY(),
+				getX(), getY() + getHeight(),
+				getX(), getY(),
+				getX() + getWidth(), getY()
 		};
 		
 		graphOffset = graph.length;
 		
-		graphData = BufferUtils.createFloatBuffer(maxSteps * 2);
+		graphData = BufferUtils.createFloatBuffer(getMaxSteps() * 2);
 		stepCount = 0;
 		
 		vbo = glGenBuffers();
@@ -94,12 +92,66 @@ public class PerformanceGraph {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		RenderUtils.glBindVertexArray(0);
 		
+		uiProgram = new ShaderProgram(Utils.readFully(getClass().getResourceAsStream(RenderUtils.SHADERS_PATH + "perf_graph.vert")),
+				Utils.readFully(getClass().getResourceAsStream(RenderUtils.SHADERS_PATH + "perf_graph.frag")));
+		
 		Matrix4 projectionMatrix = new Matrix4().clearToOrtho(0, RenderUtils.getWidth(), 0, RenderUtils.getHeight(), 0, 1);
 		
 		uiProgram.begin();
 		glUniformMatrix4(uiProgram.getUniformLocation("projectionMatrix"), false, projectionMatrix.toBuffer());
-		glUniform4(uiProgram.getUniformLocation("color"), color.toBuffer());
 		uiProgram.end();
+	}
+	
+	public int getX() {
+		return x;
+	}
+	
+	public void setX(int x) {
+		this.x = x;
+	}
+	
+	public int getY() {
+		return y;
+	}
+	
+	public void setY(int y) {
+		this.y = y;
+	}
+	
+	public float getMaxValue() {
+		return maxValue;
+	}
+	
+	public void setMaxValue(float maxValue) {
+		this.maxValue = maxValue;
+	}
+	
+	public Vector4 getColor() {
+		return color;
+	}
+	
+	public void setColor(Vector4 color) {
+		this.color = color.copy();
+		
+		uiProgram.begin();
+		glUniform4(uiProgram.getUniformLocation("color"), getColor().toBuffer());
+		uiProgram.end();
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+	
+	public int getHeight() {
+		return height;
+	}
+	
+	public int getMaxSteps() {
+		return maxSteps;
+	}
+	
+	public int getStepWidth() {
+		return stepWidth;
 	}
 	
 	private long elapsedTime;
@@ -112,22 +164,22 @@ public class PerformanceGraph {
 			
 			graphData.clear();
 			
-			if(stepCount < maxSteps) {
+			if(stepCount < getMaxSteps()) {
 				stepCount++;
 			}
 			
 			for(int a = stepCount * 2 - 2; a >= 2; a -= 2) {
-				graphData.put(a, graphData.get(a - 2) - stepWidth);
+				graphData.put(a, graphData.get(a - 2) - getStepWidth());
 				graphData.put(a + 1, graphData.get(a - 1));
 			}
 			
-			float stepHeight = (float)(Stopwatch.getTimePerFrame(stopWatchName) / maxValue * height);
+			float stepHeight = height * stepValueSupplier.get().floatValue() / getMaxValue();
 			
 			if(Float.isNaN(stepHeight))
 				stepHeight = 0;
 			
-			graphData.put(0, x + width - 1);
-			graphData.put(1, y + stepHeight);
+			graphData.put(0, getX() + getWidth() - 1);
+			graphData.put(1, getY() + stepHeight);
 			
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
 			glBufferSubData(GL_ARRAY_BUFFER, graphOffset * Float.BYTES, graphData);

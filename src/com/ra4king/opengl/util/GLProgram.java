@@ -12,7 +12,7 @@ import org.lwjgl.opengl.PixelFormat;
  * @author Roi Atalla
  */
 public abstract class GLProgram {
-	private int fps;
+	private int fps, lastFps;
 	
 	private boolean printDebug;
 	
@@ -43,8 +43,20 @@ public abstract class GLProgram {
 		this.fps = fps;
 	}
 	
+	/**
+	 * Returns the target FPS
+	 * 
+	 * @return
+	 */
 	public int getFPS() {
 		return fps;
+	}
+	
+	/**
+	 * Returns the number of frames in the previous second.
+	 */
+	public int getLastFps() {
+		return lastFps;
 	}
 	
 	public void setPrintDebug(boolean printDebug) {
@@ -108,8 +120,8 @@ public abstract class GLProgram {
 			
 			Utils.checkGLError("resized");
 			
-			long lastTime, lastFPS;
-			lastTime = lastFPS = System.nanoTime();
+			long lastTime, lastFpsTime;
+			lastTime = lastFpsTime = System.nanoTime();
 			int frames = 0;
 			
 			while(!Display.isCloseRequested() && !shouldStop()) {
@@ -141,14 +153,15 @@ public abstract class GLProgram {
 				Utils.checkGLError("render");
 				
 				frames++;
-				if(System.nanoTime() - lastFPS >= 1e9) {
+				if(System.nanoTime() - lastFpsTime >= 1e9) {
 					if(printDebug) {
 						System.out.printf("\nFPS: %d\n", frames);
 						Stopwatch.print(System.out);
 					}
 					
-					lastFPS += 1e9;
+					lastFpsTime += 1e9;
 					
+					lastFps = frames;
 					frames = 0;
 				}
 				

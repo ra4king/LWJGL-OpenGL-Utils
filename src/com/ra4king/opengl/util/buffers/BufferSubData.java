@@ -23,6 +23,9 @@ public class BufferSubData extends GLBuffer {
 		isBound = false;
 	}
 	
+	/**
+	 * Put your data in the ByteBuffer. Do not flip when finished. Updates aren't final until unbind() is called.
+	 */
 	@Override
 	public ByteBuffer bind(int offset, int size) {
 		if(isBound)
