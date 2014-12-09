@@ -1,5 +1,7 @@
 package com.ra4king.opengl.util.math;
 
+import net.indiespot.struct.cp.CopyStruct;
+
 /**
  * @author Roi Atalla
  */
@@ -137,6 +139,7 @@ public class Quaternion {
 		return this;
 	}
 	
+	@CopyStruct
 	public Vector3 mult(Vector3 v) {
 		Vector3 quatVector = new Vector3(x, y, z);
 		
