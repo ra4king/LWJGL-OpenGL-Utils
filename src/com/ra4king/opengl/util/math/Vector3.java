@@ -143,7 +143,7 @@ public class Vector3 {
 	}
 	
 	public float length() {
-		return (float)Math.sqrt(x * x + y * y + z * z);
+		return (float)Math.sqrt(lengthSquared());
 	}
 	
 	public float lengthSquared() {
@@ -152,10 +152,10 @@ public class Vector3 {
 	
 	@TakeStruct
 	public Vector3 normalize() {
-		float length = length();
-		x /= length;
-		y /= length;
-		z /= length;
+		float length = 1f / length();
+		x *= length;
+		y *= length;
+		z *= length;
 		return this;
 	}
 	
