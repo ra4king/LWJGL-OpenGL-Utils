@@ -7,6 +7,9 @@ import com.ra4king.opengl.util.math.Quaternion;
 import com.ra4king.opengl.util.math.Vector2;
 import com.ra4king.opengl.util.math.Vector3;
 
+import net.indiespot.struct.cp.CopyStruct;
+import net.indiespot.struct.cp.Struct;
+
 /**
  * @author Roi Atalla
  * 
@@ -59,13 +62,12 @@ public class MousePoles {
 		public Quaternion orientation;
 		
 		public ObjectData(ObjectData data) {
-			position = data.position.copy();
-			orientation = data.orientation.copy();
+			this(data.position, data.orientation);
 		}
 		
 		public ObjectData(Vector3 v, Quaternion q) {
-			position = v.copy();
-			orientation = q.copy();
+			position = Struct.malloc(Vector3.class).set(v);
+			orientation = Struct.malloc(Quaternion.class).set(q);
 		}
 	}
 	
@@ -83,9 +85,9 @@ public class MousePoles {
 		}
 		
 		private Vector3[] axisVectors = {
-				new Vector3(1, 0, 0),
-				new Vector3(0, 1, 0),
-				new Vector3(0, 0, 1)
+				Vector3.RIGHT,
+				Vector3.UP,
+				Vector3.BACK
 		};
 		
 		private ViewProvider view;
@@ -98,9 +100,9 @@ public class MousePoles {
 		private RotateMode rotateMode;
 		private boolean isDragging;
 		
-		private Vector2 prevMousePos;
-		private Vector2 startDragMousePos;
-		private Quaternion startDragOrient;
+		private Vector2 prevMousePos = Struct.malloc(Vector2.class);
+		private Vector2 startDragMousePos = Struct.malloc(Vector2.class);
+		private Quaternion startDragOrient = Struct.malloc(Quaternion.class);
 		
 		public ObjectPole(ObjectData initialData, float rotateScale, MouseButton actionButton, ViewProvider lookAtProvider) {
 			this.view = lookAtProvider;
@@ -137,10 +139,12 @@ public class MousePoles {
 				po = new ObjectData(initialPo);
 		}
 		
+		@CopyStruct
 		private Quaternion calcRotationQuat(Axis axis, float angle) {
 			return calcRotationQuat(axis.ordinal(), angle);
 		}
 		
+		@CopyStruct
 		private Quaternion calcRotationQuat(int axis, float angle) {
 			return Utils.angleAxisDeg(angle, axisVectors[axis]);
 		}
@@ -149,7 +153,7 @@ public class MousePoles {
 			if(!isDragging)
 				fromInitial = false;
 			
-			po.orientation = rot.copy().mult(fromInitial ? startDragOrient : po.orientation).normalize();
+			po.orientation.set(new Quaternion(rot).mult(fromInitial ? startDragOrient : po.orientation).normalize());
 		}
 		
 		public void rotateViewDegrees(Quaternion rot, boolean fromInitial) {
@@ -160,15 +164,14 @@ public class MousePoles {
 				rotateWorldDegrees(rot, fromInitial);
 			else {
 				Quaternion viewQuat = view.calcMatrix().toQuaternion();
-				Quaternion inViewQuat = viewQuat.copy().conjugate();
-				po.orientation = inViewQuat.mult(rot).mult(viewQuat).mult(fromInitial ? startDragOrient : po.orientation).normalize();
+				po.orientation.set(new Quaternion(viewQuat).conjugate().mult(rot).mult(viewQuat).mult(fromInitial ? startDragOrient : po.orientation).normalize());
 			}
 		}
 		
 		@Override
 		public void mouseMove(Vector2 position) {
 			if(isDragging) {
-				Vector2 diff = position.copy().sub(prevMousePos);
+				Vector2 diff = new Vector2(position).sub(prevMousePos);
 				
 				switch(rotateMode) {
 					case DUAL_AXIS:
@@ -177,7 +180,7 @@ public class MousePoles {
 						rotateViewDegrees(rot, false);
 						break;
 					case BIAXIAL: {
-						Vector2 initDiff = position.copy().sub(startDragMousePos);
+						Vector2 initDiff = new Vector2(position).sub(startDragMousePos);
 						
 						Axis axis;
 						float degAngle;
@@ -197,7 +200,7 @@ public class MousePoles {
 						break;
 				}
 				
-				prevMousePos = position.copy();
+				prevMousePos.set(position);
 			}
 		}
 		
@@ -213,11 +216,11 @@ public class MousePoles {
 						else
 							rotateMode = RotateMode.DUAL_AXIS;
 						
-						prevMousePos = position.copy();
+						prevMousePos.set(position);
 						
-						startDragMousePos = position.copy();
+						startDragMousePos.set(position);
 						
-						startDragOrient = po.orientation.copy();
+						startDragOrient.set(po.orientation);
 						
 						isDragging = true;
 					}
@@ -247,15 +250,12 @@ public class MousePoles {
 		public float degSpinRotation;
 		
 		public ViewData(ViewData data) {
-			targetPos = data.targetPos.copy();
-			orient = data.orient.copy();
-			radius = data.radius;
-			degSpinRotation = data.degSpinRotation;
+			this(Struct.malloc(Vector3.class).set(data.targetPos), Struct.malloc(Quaternion.class).set(data.orient), data.radius, data.degSpinRotation);
 		}
 		
 		public ViewData(Vector3 v, Quaternion q, float r, float d) {
-			targetPos = v;
-			orient = q.copy();
+			targetPos = Struct.malloc(Vector3.class).set(v);
+			orient = Struct.malloc(Quaternion.class).set(q);
 			radius = r;
 			degSpinRotation = d;
 		}
@@ -310,12 +310,12 @@ public class MousePoles {
 		}
 		
 		private Vector3[] offsets = {
-				new Vector3(0, 1, 0),
-				new Vector3(0, -1, 0),
-				new Vector3(0, 0, -1),
-				new Vector3(0, 0, 1),
-				new Vector3(1, 0, 0),
-				new Vector3(-1, 0, 0)
+				Struct.malloc(Vector3.class).set(0, 1, 0),
+				Struct.malloc(Vector3.class).set(0, -1, 0),
+				Struct.malloc(Vector3.class).set(0, 0, -1),
+				Struct.malloc(Vector3.class).set(0, 0, 1),
+				Struct.malloc(Vector3.class).set(1, 0, 0),
+				Struct.malloc(Vector3.class).set(-1, 0, 0)
 		};
 		
 		private ViewData currView;
@@ -329,8 +329,8 @@ public class MousePoles {
 		private RotateMode rotateMode;
 		
 		private float degStarDragSpin;
-		private Vector2 startDragMouseLoc;
-		private Quaternion startDragOrient;
+		private Vector2 startDragMouseLoc = Struct.malloc(Vector2.class);
+		private Quaternion startDragOrient = Struct.malloc(Quaternion.class);
 		
 		public ViewPole(ViewData initialView, ViewScale viewScale, MouseButton actionButton) {
 			this(initialView, viewScale, actionButton, false);
@@ -353,7 +353,7 @@ public class MousePoles {
 			Quaternion fullRotation = Utils.angleAxisDeg(currView.degSpinRotation, new Vector3(0, 0, 1)).mult(currView.orient);
 			mat.mult(fullRotation.toMatrix());
 			
-			mat.translate(currView.targetPos.copy().mult(-1));
+			mat.translate(new Vector3(currView.targetPos).mult(-1));
 			
 			return mat;
 		}
@@ -382,21 +382,21 @@ public class MousePoles {
 		public void processXChange(int diffX) {
 			float degAngleDiff = diffX * viewScale.rotationScale;
 			
-			currView.orient = startDragOrient.copy().mult(Utils.angleAxisDeg(degAngleDiff, new Vector3(0, 1, 0)));
+			currView.orient.set(startDragOrient).mult(Utils.angleAxisDeg(degAngleDiff, Vector3.UP));
 		}
 		
 		public void processYChange(int diffY) {
 			float degAngleDiff = diffY * viewScale.rotationScale;
 			
-			currView.orient = Utils.angleAxisDeg(degAngleDiff, new Vector3(1, 0, 0)).mult(startDragOrient);
+			currView.orient.set(Utils.angleAxisDeg(degAngleDiff, new Vector3(1, 0, 0)).mult(startDragOrient));
 		}
 		
 		public void processXYChange(int diffX, int diffY) {
 			float degXAngleDiff = diffX * viewScale.rotationScale;
 			float degYAngleDiff = diffY * viewScale.rotationScale;
 			
-			currView.orient = startDragOrient.copy().mult(Utils.angleAxisDeg(degXAngleDiff, new Vector3(0, 1, 0)));
-			currView.orient = Utils.angleAxisDeg(degYAngleDiff, new Vector3(1, 0, 0)).mult(currView.orient);
+			currView.orient.set(startDragOrient).mult(Utils.angleAxisDeg(degXAngleDiff, Vector3.UP));
+			currView.orient.set(Utils.angleAxisDeg(degYAngleDiff, new Vector3(1, 0, 0)).mult(currView.orient));
 		}
 		
 		public void processSpinAxis(int diffX) {
@@ -407,11 +407,11 @@ public class MousePoles {
 		public void beginDragRotate(Vector2 start, RotateMode rotMode) {
 			rotateMode = rotMode;
 			
-			startDragMouseLoc = start.copy();
+			startDragMouseLoc.set(start);
 			
 			degStarDragSpin = currView.degSpinRotation;
 			
-			startDragOrient = currView.orient.copy();
+			startDragOrient.set(currView.orient);
 			
 			isDragging = true;
 		}
@@ -446,7 +446,7 @@ public class MousePoles {
 			if(keepResults)
 				onDragRotate(end);
 			else
-				currView.orient = startDragOrient.copy();
+				currView.orient.set(startDragOrient);
 			
 			isDragging = false;
 		}
@@ -511,11 +511,11 @@ public class MousePoles {
 		}
 		
 		private void offsetTargetPos(TargetOffsetDir dir, float worldDistance) {
-			offsetTargetPos(offsets[dir.ordinal()].copy().mult(worldDistance));
+			offsetTargetPos(new Vector3(offsets[dir.ordinal()]).mult(worldDistance));
 		}
 		
 		private void offsetTargetPos(Vector3 cameraOffset) {
-			currView.targetPos.add(calcMatrix().toQuaternion().conjugate().mult(cameraOffset));
+			currView.targetPos.add(calcMatrix().toQuaternion().conjugate().mult3(cameraOffset));
 		}
 		
 		@Override

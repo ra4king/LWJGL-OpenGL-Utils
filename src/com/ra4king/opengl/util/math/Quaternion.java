@@ -1,12 +1,26 @@
 package com.ra4king.opengl.util.math;
 
 import net.indiespot.struct.cp.CopyStruct;
+import net.indiespot.struct.cp.StructField;
+import net.indiespot.struct.cp.StructType;
+import net.indiespot.struct.cp.TakeStruct;
 
 /**
  * @author Roi Atalla
  */
+@StructType(sizeof = 16)
 public class Quaternion {
-	private float x, y, z, w;
+	@StructField(offset = 0)
+	private float x;
+	
+	@StructField(offset = 4)
+	private float y;
+	
+	@StructField(offset = 8)
+	private float z;
+	
+	@StructField(offset = 12)
+	private float w;
 	
 	public Quaternion() {
 		reset();
@@ -29,14 +43,11 @@ public class Quaternion {
 		set(q);
 	}
 	
-	public Quaternion copy() {
-		return new Quaternion(this);
-	}
-	
 	public float x() {
 		return x;
 	}
 	
+	@TakeStruct
 	public Quaternion x(float x) {
 		this.x = x;
 		return this;
@@ -46,6 +57,7 @@ public class Quaternion {
 		return y;
 	}
 	
+	@TakeStruct
 	public Quaternion y(float y) {
 		this.y = y;
 		return this;
@@ -55,6 +67,7 @@ public class Quaternion {
 		return z;
 	}
 	
+	@TakeStruct
 	public Quaternion z(float z) {
 		this.z = z;
 		return this;
@@ -64,11 +77,13 @@ public class Quaternion {
 		return w;
 	}
 	
+	@TakeStruct
 	public Quaternion w(float w) {
 		this.w = w;
 		return this;
 	}
 	
+	@TakeStruct
 	public Quaternion set(float x, float y, float z, float w) {
 		this.x = x;
 		this.y = y;
@@ -77,10 +92,12 @@ public class Quaternion {
 		return this;
 	}
 	
+	@TakeStruct
 	public Quaternion set(Quaternion q) {
 		return set(q.x, q.y, q.z, q.w);
 	}
 	
+	@TakeStruct
 	public Quaternion reset() {
 		x = y = z = 0;
 		w = 1;
@@ -91,12 +108,13 @@ public class Quaternion {
 		return (float)Math.sqrt(x * x + y * y + z * z + w * w);
 	}
 	
+	@TakeStruct
 	public Quaternion normalize() {
-		float length = length();
-		x /= length;
-		y /= length;
-		z /= length;
-		w /= length;
+		float length = 1f / length();
+		x *= length;
+		y *= length;
+		z *= length;
+		w *= length;
 		return this;
 	}
 	
@@ -104,6 +122,7 @@ public class Quaternion {
 		return x * q.x + y * q.y + z * q.z + w * q.w;
 	}
 	
+	@TakeStruct
 	public Quaternion add(float x, float y, float z, float w) {
 		this.x += x;
 		this.y += y;
@@ -113,10 +132,12 @@ public class Quaternion {
 		return this;
 	}
 	
+	@TakeStruct
 	public Quaternion add(Quaternion q) {
 		return add(q.x, q.y, q.z, q.w);
 	}
 	
+	@TakeStruct
 	public Quaternion sub(float x, float y, float z, float w) {
 		this.x -= x;
 		this.y -= y;
@@ -126,10 +147,12 @@ public class Quaternion {
 		return this;
 	}
 	
+	@TakeStruct
 	public Quaternion sub(Quaternion q) {
 		return sub(q.x, q.y, q.z, q.w);
 	}
 	
+	@TakeStruct
 	public Quaternion mult(float f) {
 		this.x *= f;
 		this.y *= f;
@@ -140,7 +163,7 @@ public class Quaternion {
 	}
 	
 	@CopyStruct
-	public Vector3 mult(Vector3 v) {
+	public Vector3 mult3(Vector3 v) {
 		Vector3 quatVector = new Vector3(x, y, z);
 		
 		Vector3 uv = quatVector.cross(v);
@@ -152,6 +175,7 @@ public class Quaternion {
 		return new Vector3(v).add(uv).add(uuv);
 	}
 	
+	@TakeStruct
 	public Quaternion mult(Quaternion q) {
 		float xx = w * q.x + x * q.w + y * q.z - z * q.y;
 		float yy = w * q.y + y * q.w + z * q.x - x * q.z;
@@ -166,6 +190,7 @@ public class Quaternion {
 		return this;
 	}
 	
+	@TakeStruct
 	public Quaternion conjugate() {
 		x *= -1;
 		y *= -1;
@@ -174,6 +199,7 @@ public class Quaternion {
 		return this;
 	}
 	
+	@TakeStruct
 	public Quaternion inverse() {
 		return normalize().conjugate();
 	}

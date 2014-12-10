@@ -24,6 +24,7 @@ public class Vector3 {
 	@StructField(offset = 8)
 	private float z;
 	
+	public static final Vector3 ZERO = Struct.malloc(Vector3.class).set(0f);
 	public static final Vector3 RIGHT = Struct.malloc(Vector3.class).set(1, 0, 0);
 	public static final Vector3 LEFT = Struct.malloc(Vector3.class).set(-1, 0, 0);
 	public static final Vector3 UP = Struct.malloc(Vector3.class).set(0, 1, 0);
@@ -43,25 +44,12 @@ public class Vector3 {
 		set(x, y, z);
 	}
 	
-	public Vector3(Vector2 vec) {
-		set(vec);
-	}
-	
 	public Vector3(Vector2 vec, float z) {
 		set(vec, z);
 	}
 	
 	public Vector3(Vector3 vec) {
 		set(vec);
-	}
-	
-	public Vector3(Vector4 vec) {
-		set(vec);
-	}
-	
-	@CopyStruct
-	public Vector3 copy() {
-		return new Vector3(this);
 	}
 	
 	public float x() {
@@ -117,7 +105,7 @@ public class Vector3 {
 	}
 	
 	@TakeStruct
-	public Vector3 set(Vector2 vec) {
+	public Vector3 set2(Vector2 vec) {
 		return set(vec.x(), vec.y(), 0);
 	}
 	
@@ -132,7 +120,7 @@ public class Vector3 {
 	}
 	
 	@TakeStruct
-	public Vector3 set(Vector4 vec) {
+	public Vector3 set4(Vector4 vec) {
 		return set(vec.x(), vec.y(), vec.z());
 	}
 	

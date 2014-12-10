@@ -4,7 +4,6 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
-import net.indiespot.struct.cp.CopyStruct;
 import net.indiespot.struct.cp.Struct;
 import net.indiespot.struct.cp.StructField;
 import net.indiespot.struct.cp.StructType;
@@ -34,49 +33,28 @@ public class Vector4 {
 	public static final Vector4 FORWARD = Struct.malloc(Vector4.class).set(0, 0, -1, 1);
 	public static final Vector4 BACK = Struct.malloc(Vector4.class).set(0, 0, 1, 1);
 	
-	@TakeStruct
 	public Vector4() {
 		set(0, 0, 0, 0);
 	}
 	
-	@TakeStruct
 	public Vector4(float v) {
 		this(v, v, v, v);
 	}
 	
-	@TakeStruct
 	public Vector4(float x, float y, float z, float w) {
 		set(x, y, z, w);
 	}
 	
-	@TakeStruct
-	public Vector4(Vector2 vec) {
-		set(vec);
-	}
-	
-	@TakeStruct
 	public Vector4(Vector2 vec, float z, float w) {
 		set(vec, z, w);
 	}
 	
-	@TakeStruct
-	public Vector4(Vector3 vec) {
-		set(vec);
-	}
-	
-	@TakeStruct
 	public Vector4(Vector3 vec, float w) {
 		set(vec, w);
 	}
 	
-	@TakeStruct
 	public Vector4(Vector4 vec) {
 		set(vec);
-	}
-	
-	@CopyStruct
-	public Vector4 copy() {
-		return new Vector4(this);
 	}
 	
 	public float x() {
@@ -138,7 +116,7 @@ public class Vector4 {
 	}
 	
 	@TakeStruct
-	public Vector4 set(Vector2 vec) {
+	public Vector4 set2(Vector2 vec) {
 		return set(vec, 0, 0);
 	}
 	
@@ -148,7 +126,7 @@ public class Vector4 {
 	}
 	
 	@TakeStruct
-	public Vector4 set(Vector3 vec) {
+	public Vector4 set3(Vector3 vec) {
 		return set(vec, 0);
 	}
 	

@@ -5,11 +5,14 @@ import static org.lwjgl.opengl.GL20.*;
 import com.ra4king.opengl.util.ShaderProgram;
 import com.ra4king.opengl.util.math.Vector4;
 
+import net.indiespot.struct.cp.CopyStruct;
+import net.indiespot.struct.cp.Struct;
+
 /**
  * @author Roi Atalla
  */
 public class UniformVec4Binder extends UniformBinderBase {
-	private Vector4 value = new Vector4();
+	private Vector4 value = Struct.malloc(Vector4.class).set(0f);
 	
 	public UniformVec4Binder() {}
 	
@@ -21,8 +24,9 @@ public class UniformVec4Binder extends UniformBinderBase {
 		value.set(vec);
 	}
 	
+	@CopyStruct
 	public Vector4 getValue() {
-		return value.copy();
+		return value;
 	}
 	
 	@Override

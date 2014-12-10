@@ -14,6 +14,8 @@ import com.ra4king.opengl.util.Utils;
 import com.ra4king.opengl.util.math.Matrix4;
 import com.ra4king.opengl.util.math.Vector4;
 
+import net.indiespot.struct.cp.Struct;
+
 /**
  * @author Roi Atalla
  */
@@ -26,7 +28,7 @@ public class PerformanceGraph {
 	private int maxSteps;
 	private int stepWidth;
 	
-	private Vector4 color;
+	private Vector4 color = Struct.malloc(Vector4.class);
 	
 	private ShaderProgram uiProgram;
 	private int vbo, vao;
@@ -131,10 +133,10 @@ public class PerformanceGraph {
 	}
 	
 	public void setColor(Vector4 color) {
-		this.color = color.copy();
+		this.color.set(color);
 		
 		uiProgram.begin();
-		glUniform4(uiProgram.getUniformLocation("color"), getColor().toBuffer());
+		glUniform4(uiProgram.getUniformLocation("color"), color.toBuffer());
 		uiProgram.end();
 	}
 	

@@ -5,6 +5,8 @@ import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 
+import net.indiespot.struct.cp.CopyStruct;
+
 /**
  * @author Roi Atalla
  */
@@ -76,17 +78,9 @@ public class Matrix4 {
 		return get(col * 4 + row);
 	}
 	
+	@CopyStruct
 	public Vector4 getColumn(int index) {
-		return getColumn(index, null);
-	}
-	
-	public Vector4 getColumn(int index, Vector4 result) {
-		if(result == null)
-			result = new Vector4();
-		
-		result.set(get(index * 4 + 0), get(index * 4 + 1), get(index * 4 + 2), get(index * 4 + 3));
-		
-		return result;
+		return new Vector4(get(index * 4 + 0), get(index * 4 + 1), get(index * 4 + 2), get(index * 4 + 3));
 	}
 	
 	public Matrix4 put(int index, float f) {
@@ -102,7 +96,7 @@ public class Matrix4 {
 		return this;
 	}
 	
-	public Matrix4 putColumn(int index, Vector3 v) {
+	public Matrix4 putColumn3(int index, Vector3 v) {
 		put(index * 4 + 0, v.x());
 		put(index * 4 + 1, v.y());
 		put(index * 4 + 2, v.z());
@@ -167,48 +161,24 @@ public class Matrix4 {
 		return mult(m.matrix);
 	}
 	
-	public Vector3 mult(Vector3 vec) {
-		return mult(vec, null);
+	@CopyStruct
+	public Vector3 mult3(Vector3 vec) {
+		return mult(vec, 1);
 	}
 	
-	public Vector3 mult(Vector3 vec, Vector3 result) {
-		return mult(vec, 1, result);
-	}
-	
+	@CopyStruct
 	public Vector3 mult(Vector3 vec, float w) {
-		return mult(vec, w, null);
+		return new Vector3(get(0) * vec.x() + get(4) * vec.y() + get(8) * vec.z() + get(12) * w,
+				get(1) * vec.x() + get(5) * vec.y() + get(9) * vec.z() + get(13) * w,
+				get(2) * vec.x() + get(6) * vec.y() + get(10) * vec.z() + get(14) * w);
 	}
 	
-	public Vector3 mult(Vector3 vec, float w, Vector3 result) {
-		if(result == null)
-			result = new Vector3();
-		
-		result.x(get(0) * vec.x() + get(4) * vec.y() + get(8) * vec.z() + get(12) * w);
-		result.y(get(1) * vec.x() + get(5) * vec.y() + get(9) * vec.z() + get(13) * w);
-		result.z(get(2) * vec.x() + get(6) * vec.y() + get(10) * vec.z() + get(14) * w);
-		
-		return result;
-	}
-	
+	@CopyStruct
 	public Vector4 mult(Vector4 vec) {
-		return mult(vec, null);
-	}
-	
-	public Vector4 mult(Vector4 vec, Vector4 result) {
-		if(result == null)
-			result = new Vector4();
-		
-		// result.x(get(0) * vec.x() + get(4) * vec.y() + get(8) * vec.z() + get(12) * vec.w());
-		// result.y(get(1) * vec.x() + get(5) * vec.y() + get(9) * vec.z() + get(13) * vec.w());
-		// result.z(get(2) * vec.x() + get(6) * vec.y() + get(10) * vec.z() + get(14) * vec.w());
-		// result.w(get(3) * vec.x() + get(7) * vec.y() + get(11) * vec.z() + get(15) * vec.w());
-		
-		result.x(matrix[0] * vec.x() + matrix[4] * vec.y() + matrix[8] * vec.z() + matrix[12] * vec.w());
-		result.y(matrix[1] * vec.x() + matrix[5] * vec.y() + matrix[9] * vec.z() + matrix[13] * vec.w());
-		result.z(matrix[2] * vec.x() + matrix[6] * vec.y() + matrix[10] * vec.z() + matrix[14] * vec.w());
-		result.w(matrix[3] * vec.x() + matrix[7] * vec.y() + matrix[11] * vec.z() + matrix[15] * vec.w());
-		
-		return result;
+		return new Vector4(matrix[0] * vec.x() + matrix[4] * vec.y() + matrix[8] * vec.z() + matrix[12] * vec.w(),
+				matrix[1] * vec.x() + matrix[5] * vec.y() + matrix[9] * vec.z() + matrix[13] * vec.w(),
+				matrix[2] * vec.x() + matrix[6] * vec.y() + matrix[10] * vec.z() + matrix[14] * vec.w(),
+				matrix[3] * vec.x() + matrix[7] * vec.y() + matrix[11] * vec.z() + matrix[15] * vec.w());
 	}
 	
 	public Matrix4 transpose() {
@@ -353,6 +323,7 @@ public class Matrix4 {
 		return set(inv.transpose().mult(1 / determinant()));
 	}
 	
+	@CopyStruct
 	public Quaternion toQuaternion() {
 		float x = get(0) - get(5) - get(10);
 		float y = get(5) - get(0) - get(10);

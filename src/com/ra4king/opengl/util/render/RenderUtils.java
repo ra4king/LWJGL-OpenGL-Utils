@@ -124,7 +124,7 @@ public final class RenderUtils {
 			private Vector4 plane;
 			
 			public float distanceFromPoint(Vector3 point) {
-				return temp.set(plane).dot(point) + plane.w();
+				return temp.set4(plane).dot(point) + plane.w();
 			}
 		}
 		

@@ -30,6 +30,8 @@ import com.ra4king.opengl.util.math.Vector3;
 import com.ra4king.opengl.util.scene.Scene.SceneNode.Variant;
 import com.ra4king.opengl.util.scene.binders.StateBinder;
 
+import net.indiespot.struct.cp.CopyStruct;
+import net.indiespot.struct.cp.Struct;
 import rosick.jglsdk.glimg.DdsLoader;
 import rosick.jglsdk.glimg.ImageSet;
 import rosick.jglsdk.glimg.TextureGenerator;
@@ -523,8 +525,8 @@ public class Scene {
 	
 	public static class Transform {
 		private Quaternion orient = new Quaternion();
-		private Vector3 scale = new Vector3(1);
-		private Vector3 translate = new Vector3();
+		private Vector3 scale = Struct.malloc(Vector3.class).set(1f);
+		private Vector3 translate = Struct.malloc(Vector3.class).set(0f);
 		
 		public Matrix4 getMatrix() {
 			return new Matrix4().clearToIdentity().translate(translate).mult(orient.toMatrix()).scale(scale);
@@ -593,8 +595,9 @@ public class Scene {
 			nodeTransform.orient.set(orient).normalize();
 		}
 		
+		@CopyStruct
 		public Quaternion getOrient() {
-			return nodeTransform.orient.copy();
+			return nodeTransform.orient;
 		}
 		
 		public void offset(Vector3 offset) {

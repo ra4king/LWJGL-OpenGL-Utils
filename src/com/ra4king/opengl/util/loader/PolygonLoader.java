@@ -23,18 +23,17 @@ public class PolygonLoader {
 		return loadCube(sideLength, center, interleaved, vec4, null);
 	}
 	
-	private static final Vector4 temp = new Vector4(), pos = new Vector4();
-	
 	public static float[] loadCube(Vector3 sideLength, Vector3 center, boolean interleaved, boolean vec4, Matrix4 modelMatrix) {
 		float[] buffer = vec4 ? (interleaved ? cubeVec4interleaved : cubeVec4) : (interleaved ? cubeVec3interleaved : cubeVec3);
 		
 		for(int a = 0; a < cubeData.length / 2; a += 3) {
 			int position = (a / 3) * ((interleaved ? 3 : 0) + (vec4 ? 4 : 3));
 			
+			Vector4 pos;
 			if(modelMatrix == null)
-				pos.set(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2] * sideLength.z(), 1);
+				pos = new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2] * sideLength.z(), 1);
 			else
-				modelMatrix.mult(temp.set(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2] * sideLength.z(), 1), pos);
+				pos = modelMatrix.mult(new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2] * sideLength.z(), 1));
 			
 			buffer[position + 0] = pos.x();
 			buffer[position + 1] = pos.y();
@@ -69,10 +68,11 @@ public class PolygonLoader {
 		for(int a = 0; a < planeData.length / 2; a += 3) {
 			int position = (a / 3) * ((interleaved ? 3 : 0) + (vec4 ? 4 : 3));
 			
+			Vector4 pos;
 			if(modelMatrix == null)
-				pos.set(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2], 1);
+				pos = new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2], 1);
 			else
-				modelMatrix.mult(temp.set(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2], 1), pos);
+				pos = modelMatrix.mult(new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2], 1));
 			
 			buffer[position + 0] = pos.x();
 			buffer[position + 1] = pos.y();

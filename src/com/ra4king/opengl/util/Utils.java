@@ -21,6 +21,8 @@ import com.ra4king.opengl.util.math.Vector2;
 import com.ra4king.opengl.util.math.Vector3;
 import com.ra4king.opengl.util.math.Vector4;
 
+import net.indiespot.struct.cp.CopyStruct;
+
 /**
  * @author Roi Atalla
  */
@@ -33,6 +35,7 @@ public class Utils {
 			throw new OpenGLException("OpenGL Error during " + event + ": " + gluErrorString(error));
 	}
 	
+	@CopyStruct
 	public static Quaternion angleAxisDeg(float angle, Vector3 vec) {
 		return new Quaternion((float)Math.toRadians(angle), vec);
 	}
@@ -46,8 +49,8 @@ public class Utils {
 	}
 	
 	public static Matrix4 lookAt(Vector3 eye, Vector3 center, Vector3 up) {
-		Vector3 f = center.copy().sub(eye).normalize();
-		up = up.copy().normalize();
+		Vector3 f = new Vector3(center).sub(eye).normalize();
+		up = new Vector3(up).normalize();
 		
 		Vector3 s = f.cross(up);
 		Vector3 u = s.cross(f);
@@ -57,7 +60,7 @@ public class Utils {
 				s.y(), u.y(), -f.y(), 0,
 				s.z(), u.z(), -f.z(), 0,
 				0, 0, 0, 1
-		}).translate(eye.copy().mult(-1));
+		}).translate(new Vector3(eye).mult(-1));
 	}
 	
 	public static void updateMousePoles(ViewPole ... viewPoles) {
@@ -132,6 +135,7 @@ public class Utils {
 		}
 	}
 	
+	@CopyStruct
 	public static Quaternion parseQuaternion(String s) {
 		String[] comp = StringUtil.split(s, ' ');
 		if(comp.length != 4)
@@ -146,6 +150,7 @@ public class Utils {
 		return quat;
 	}
 	
+	@CopyStruct
 	public static Vector4 parseVector4(String s) {
 		String[] comp = StringUtil.split(s, ' ');
 		if(comp.length != 4)
@@ -160,6 +165,7 @@ public class Utils {
 		return vec;
 	}
 	
+	@CopyStruct
 	public static Vector3 parseVector3(String s) throws NumberFormatException {
 		String[] comp = StringUtil.split(s, ' ');
 		if(comp.length != 3)
@@ -173,6 +179,7 @@ public class Utils {
 		return vec;
 	}
 	
+	@CopyStruct
 	public static Vector2 parseVector2(String s) throws NumberFormatException {
 		String[] comp = StringUtil.split(s, ' ');
 		if(comp.length != 2)
