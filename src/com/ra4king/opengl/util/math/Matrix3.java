@@ -5,6 +5,8 @@ import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 
+import net.indiespot.struct.cp.CopyStruct;
+
 /**
  * @author Roi Atalla
  */
@@ -104,19 +106,11 @@ public class Matrix3 {
 		return mult(m.matrix);
 	}
 	
+	@CopyStruct
 	public Vector3 mult(Vector3 vec) {
-		return mult(vec, null);
-	}
-	
-	public Vector3 mult(Vector3 vec, Vector3 result) {
-		if(result == null)
-			result = new Vector3();
-		
-		result.x(get(0) * vec.x() + get(3) * vec.y() + get(6) * vec.z());
-		result.y(get(1) * vec.x() + get(4) * vec.y() + get(7) * vec.z());
-		result.z(get(2) * vec.x() + get(5) * vec.y() + get(8) * vec.z());
-		
-		return result;
+		return new Vector3(get(0) * vec.x() + get(3) * vec.y() + get(6) * vec.z(),
+				get(1) * vec.x() + get(4) * vec.y() + get(7) * vec.z(),
+				get(2) * vec.x() + get(5) * vec.y() + get(8) * vec.z());
 	}
 	
 	public Matrix3 transpose() {
