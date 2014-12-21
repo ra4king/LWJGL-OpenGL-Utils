@@ -15,6 +15,7 @@ import com.ra4king.opengl.util.math.Matrix4;
 import com.ra4king.opengl.util.math.Vector4;
 
 import net.indiespot.struct.cp.Struct;
+import net.indiespot.struct.cp.TakeStruct;
 
 /**
  * @author Roi Atalla
@@ -64,6 +65,15 @@ public class PerformanceGraph {
 		init();
 		
 		this.setColor(color);
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		try {
+			Struct.free(color);
+		} finally {
+			super.finalize();
+		}
 	}
 	
 	private void init() {
@@ -128,6 +138,7 @@ public class PerformanceGraph {
 		this.maxValue = maxValue;
 	}
 	
+	@TakeStruct
 	public Vector4 getColor() {
 		return color;
 	}
