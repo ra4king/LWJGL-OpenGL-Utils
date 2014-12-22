@@ -12,18 +12,18 @@ import net.indiespot.struct.cp.TakeStruct;
 /**
  * @author Roi Atalla
  */
-@StructType(sizeof = 16)
+@StructType
 public class Vector4 {
-	@StructField(offset = 0)
+	@StructField
 	private float x;
 	
-	@StructField(offset = 4)
+	@StructField
 	private float y;
 	
-	@StructField(offset = 8)
+	@StructField
 	private float z;
 	
-	@StructField(offset = 12)
+	@StructField
 	private float w;
 	
 	public static final Vector4 RIGHT = Struct.malloc(Vector4.class).set(1, 0, 0, 1);

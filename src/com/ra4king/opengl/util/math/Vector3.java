@@ -13,15 +13,15 @@ import net.indiespot.struct.cp.TakeStruct;
 /**
  * @author Roi Atalla
  */
-@StructType(sizeof = 12)
+@StructType
 public class Vector3 {
-	@StructField(offset = 0)
+	@StructField
 	private float x;
 	
-	@StructField(offset = 4)
+	@StructField
 	private float y;
 	
-	@StructField(offset = 8)
+	@StructField
 	private float z;
 	
 	public static final Vector3 ZERO = Struct.malloc(Vector3.class).set(0f);
