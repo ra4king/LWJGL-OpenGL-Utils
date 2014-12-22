@@ -31,7 +31,9 @@ public class PerformanceGraph {
 	
 	private Vector4 color = Struct.malloc(Vector4.class);
 	
-	private ShaderProgram uiProgram;
+	private static ShaderProgram uiProgram;
+	
+	private Matrix4 projectionMatrix;
 	private int vbo, vao;
 	
 	private FloatBuffer graphData;
@@ -76,7 +78,15 @@ public class PerformanceGraph {
 		}
 	}
 	
+	private static void initProgram() {
+		uiProgram = new ShaderProgram(Utils.readFully(PerformanceGraph.class.getResourceAsStream(RenderUtils.SHADERS_PATH + "perf_graph.vert")),
+				Utils.readFully(PerformanceGraph.class.getResourceAsStream(RenderUtils.SHADERS_PATH + "perf_graph.frag")));
+	}
+	
 	private void init() {
+		if(uiProgram == null)
+			initProgram();
+		
 		vao = RenderUtils.glGenVertexArrays();
 		RenderUtils.glBindVertexArray(vao);
 		
@@ -104,14 +114,7 @@ public class PerformanceGraph {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		RenderUtils.glBindVertexArray(0);
 		
-		uiProgram = new ShaderProgram(Utils.readFully(getClass().getResourceAsStream(RenderUtils.SHADERS_PATH + "perf_graph.vert")),
-				Utils.readFully(getClass().getResourceAsStream(RenderUtils.SHADERS_PATH + "perf_graph.frag")));
-		
-		Matrix4 projectionMatrix = new Matrix4().clearToOrtho(0, RenderUtils.getWidth(), 0, RenderUtils.getHeight(), 0, 1);
-		
-		uiProgram.begin();
-		glUniformMatrix4(uiProgram.getUniformLocation("projectionMatrix"), false, projectionMatrix.toBuffer());
-		uiProgram.end();
+		projectionMatrix = new Matrix4().clearToOrtho(0, RenderUtils.getWidth(), 0, RenderUtils.getHeight(), 0, 1);
 	}
 	
 	public int getX() {
@@ -145,10 +148,6 @@ public class PerformanceGraph {
 	
 	public void setColor(Vector4 color) {
 		this.color.set(color);
-		
-		uiProgram.begin();
-		glUniform4(uiProgram.getUniformLocation("color"), color.toBuffer());
-		uiProgram.end();
 	}
 	
 	public int getWidth() {
@@ -206,6 +205,9 @@ public class PerformanceGraph {
 		glDisable(GL_BLEND);
 		
 		uiProgram.begin();
+		
+		glUniform4(uiProgram.getUniformLocation("color"), color.toBuffer());
+		glUniformMatrix4(uiProgram.getUniformLocation("projectionMatrix"), false, projectionMatrix.toBuffer());
 		
 		RenderUtils.glBindVertexArray(vao);
 		glDrawArrays(GL_LINES, 0, graphOffset / 2);
