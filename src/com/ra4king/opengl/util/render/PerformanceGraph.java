@@ -190,7 +190,7 @@ public class PerformanceGraph {
 			if(Float.isNaN(stepHeight))
 				stepHeight = 0;
 			
-			graphData.put(0, getX() + getWidth() - 1);
+			graphData.put(0, getX() + getWidth() - getStepWidth());
 			graphData.put(1, getY() + stepHeight);
 			
 			glBindBuffer(GL_ARRAY_BUFFER, vbo);
