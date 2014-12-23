@@ -33,7 +33,7 @@ public class PolygonLoader {
 			if(modelMatrix == null)
 				pos = new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2] * sideLength.z(), 1);
 			else
-				pos = modelMatrix.mult(new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2] * sideLength.z(), 1));
+				pos = modelMatrix.mult4(new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2] * sideLength.z(), 1));
 			
 			buffer[position + 0] = pos.x();
 			buffer[position + 1] = pos.y();
@@ -72,7 +72,7 @@ public class PolygonLoader {
 			if(modelMatrix == null)
 				pos = new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2], 1);
 			else
-				pos = modelMatrix.mult(new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2], 1));
+				pos = modelMatrix.mult4(new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2], 1));
 			
 			buffer[position + 0] = pos.x();
 			buffer[position + 1] = pos.y();

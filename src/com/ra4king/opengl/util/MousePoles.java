@@ -112,6 +112,7 @@ public class MousePoles {
 			this.actionButton = actionButton;
 		}
 		
+		@CopyStruct
 		public Matrix4 calcMatrix() {
 			Matrix4 translateMat = new Matrix4().clearToIdentity();
 			translateMat.putColumn(3, po.position, 1);
@@ -259,6 +260,16 @@ public class MousePoles {
 			radius = r;
 			degSpinRotation = d;
 		}
+		
+		@Override
+		protected void finalize() throws Throwable {
+			try {
+				Struct.free(targetPos);
+				Struct.free(orient);
+			} finally {
+				super.finalize();
+			}
+		}
 	}
 	
 	public static class ViewScale {
@@ -345,6 +356,17 @@ public class MousePoles {
 		}
 		
 		@Override
+		protected void finalize() throws Throwable {
+			try {
+				Struct.free(startDragMouseLoc);
+				Struct.free(startDragOrient);
+			} finally {
+				super.finalize();
+			}
+		}
+		
+		@Override
+		@CopyStruct
 		public Matrix4 calcMatrix() {
 			Matrix4 mat = new Matrix4().clearToIdentity();
 			

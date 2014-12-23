@@ -1,43 +1,56 @@
 package com.ra4king.opengl.util.math;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import net.indiespot.struct.cp.Struct;
+import net.indiespot.struct.cp.TakeStruct;
 
 /**
  * @author Roi Atalla
  */
 public class MatrixStack {
-	private Deque<Matrix4> stack;
-	private Matrix4 current;
+	private Matrix4[] stack;
+	private int currIdx;
 	
 	public MatrixStack() {
-		current = new Matrix4().clearToIdentity();
-		stack = new ArrayDeque<>();
+		stack = Struct.malloc(Matrix4.class, 10);
+		clear();
 	}
 	
 	public MatrixStack clear() {
-		stack.clear();
-		current = null;
+		stack[0].clearToIdentity();
+		currIdx = 0;
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 getTop() {
-		return current;
+		return stack[currIdx];
 	}
 	
 	public MatrixStack setTop(Matrix4 m) {
-		current = m;
+		stack[currIdx].set(m);
 		return this;
 	}
 	
 	public MatrixStack pushMatrix() {
-		stack.push(current);
-		current = new Matrix4(current);
+		if(++currIdx == stack.length) {
+			Matrix4[] temp = Struct.malloc(Matrix4.class, stack.length << 1);
+			for(int a = 0; a < currIdx; a++)
+				temp[a].set(stack[a]);
+			
+			Struct.free(stack);
+			stack = temp;
+		}
+		
+		stack[currIdx].clearToIdentity();
+		
 		return this;
 	}
 	
 	public MatrixStack popMatrix() {
-		current = stack.pop();
+		if(currIdx == 0)
+			throw new IllegalStateException("Already at the topmost matrix.");
+		
+		currIdx--;
 		return this;
 	}
 }

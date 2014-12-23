@@ -630,17 +630,17 @@ public class Scene {
 		}
 		
 		private void render(Variant variant, Matrix4 baseMatrix) {
-			baseMatrix = baseMatrix.copy().mult(nodeTransform.getMatrix());
-			Matrix4 objectMatrix = baseMatrix.copy().mult(objectTransform.getMatrix());
+			baseMatrix = new Matrix4(baseMatrix).mult(nodeTransform.getMatrix());
+			Matrix4 objectMatrix = new Matrix4(baseMatrix).mult(objectTransform.getMatrix());
 			
 			variant.program.program.begin();
 			glUniformMatrix4(variant.program.matrixUniform, false, objectMatrix.toBuffer());
 			
 			if(variant.program.normalMatrixUniform != -1)
-				glUniformMatrix3(variant.program.normalMatrixUniform, false, new Matrix3(objectMatrix.inverse().transpose()).toBuffer());
+				glUniformMatrix3(variant.program.normalMatrixUniform, false, new Matrix3().set4x4(objectMatrix.inverse().transpose()).toBuffer());
 			
 			if(variant.program.invNormalMatrixUniform != -1)
-				glUniformMatrix3(variant.program.invNormalMatrixUniform, false, new Matrix3(objectMatrix.inverse().transpose()).inverse().toBuffer());
+				glUniformMatrix3(variant.program.invNormalMatrixUniform, false, new Matrix3().set4x4(objectMatrix.inverse().transpose()).inverse().toBuffer());
 			
 			for(StateBinder binder : binders)
 				binder.bindState(variant.program.program);

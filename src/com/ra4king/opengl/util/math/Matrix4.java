@@ -1,29 +1,34 @@
 package com.ra4king.opengl.util.math;
 
 import java.nio.FloatBuffer;
-import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
 
 import net.indiespot.struct.cp.CopyStruct;
+import net.indiespot.struct.cp.StructField;
+import net.indiespot.struct.cp.StructType;
+import net.indiespot.struct.cp.TakeStruct;
 
 /**
  * @author Roi Atalla
  */
+@StructType
 public class Matrix4 {
+	public static final int LENGTH = 16;
+	
+	@StructField(length = LENGTH)
 	private float[] matrix;
 	
 	public Matrix4() {
-		matrix = new float[16];
+		clear();
 	}
 	
 	public Matrix4(float[] m) {
 		this();
-		set(m);
-	}
-	
-	public Matrix4(Matrix3 m) {
-		this();
+		
+		if(m.length < LENGTH)
+			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
+		
 		set(m);
 	}
 	
@@ -32,15 +37,15 @@ public class Matrix4 {
 		set(m);
 	}
 	
-	public Matrix4 copy() {
-		return new Matrix4(this);
-	}
-	
+	@TakeStruct
 	public Matrix4 clear() {
-		Arrays.fill(matrix, 0);
+		for(int a = 0; a < LENGTH; a++)
+			matrix[a] = 0;
+		
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 clearToIdentity() {
 		return clear().put(0, 1)
 				.put(5, 1)
@@ -48,6 +53,7 @@ public class Matrix4 {
 				.put(15, 1);
 	}
 	
+	@TakeStruct
 	public Matrix4 clearToOrtho(float left, float right, float bottom, float top, float near, float far) {
 		return clear().put(0, 2 / (right - left))
 				.put(5, 2 / (top - bottom))
@@ -58,6 +64,7 @@ public class Matrix4 {
 				.put(15, 1);
 	}
 	
+	@TakeStruct
 	public Matrix4 clearToPerspective(float fovRad, float width, float height, float near, float far) {
 		float fov = 1 / (float)Math.tan(fovRad / 2);
 		return clear().put(0, fov / (width / height))
@@ -66,6 +73,7 @@ public class Matrix4 {
 				.put(11, -1);
 	}
 	
+	@TakeStruct
 	public Matrix4 clearToPerspectiveDeg(float fov, float width, float height, float near, float far) {
 		return clearToPerspective((float)Math.toRadians(fov), width, height, near, far);
 	}
@@ -83,11 +91,13 @@ public class Matrix4 {
 		return new Vector4(get(index * 4 + 0), get(index * 4 + 1), get(index * 4 + 2), get(index * 4 + 3));
 	}
 	
+	@TakeStruct
 	public Matrix4 put(int index, float f) {
 		matrix[index] = f;
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 putColumn(int index, Vector4 v) {
 		put(index * 4 + 0, v.x());
 		put(index * 4 + 1, v.y());
@@ -96,6 +106,7 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 putColumn3(int index, Vector3 v) {
 		put(index * 4 + 0, v.x());
 		put(index * 4 + 1, v.y());
@@ -103,6 +114,7 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 putColumn(int index, Vector3 v, float w) {
 		put(index * 4 + 0, v.x());
 		put(index * 4 + 1, v.y());
@@ -111,20 +123,29 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 set(float[] m) {
-		if(m.length < matrix.length)
-			throw new IllegalArgumentException("float array must have at least " + matrix.length + " values.");
+		if(m.length < LENGTH)
+			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
 		
-		System.arraycopy(m, 0, matrix, 0, matrix.length);
+		for(int a = 0; a < m.length && a < LENGTH; a++) {
+			matrix[a] = m[a];
+		}
 		
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 set(Matrix4 m) {
-		return set(m.matrix);
+		for(int a = 0; a < LENGTH; a++) {
+			matrix[a] = m.matrix[a];
+		}
+		
+		return this;
 	}
 	
-	public Matrix4 set(Matrix3 m) {
+	@TakeStruct
+	public Matrix4 set3x3(Matrix3 m) {
 		for(int a = 0; a < 3; a++) {
 			matrix[a * 4 + 0] = m.get(a * 3 + 0);
 			matrix[a * 4 + 1] = m.get(a * 3 + 1);
@@ -134,31 +155,34 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 mult(float f) {
-		for(int a = 0; a < matrix.length; a++)
+		for(int a = 0; a < LENGTH; a++)
 			put(a, get(a) * f);
 		
 		return this;
 	}
 	
-	private static final float[] tempm = new float[16];
-	private static final float[] tempmOp = new float[16];
-	
+	@TakeStruct
 	public Matrix4 mult(float[] m) {
-		for(int a = 0; a < matrix.length; a += 4) {
-			tempm[a + 0] = get(0) * m[a] + get(4) * m[a + 1] + get(8) * m[a + 2] + get(12) * m[a + 3];
-			tempm[a + 1] = get(1) * m[a] + get(5) * m[a + 1] + get(9) * m[a + 2] + get(13) * m[a + 3];
-			tempm[a + 2] = get(2) * m[a] + get(6) * m[a + 1] + get(10) * m[a + 2] + get(14) * m[a + 3];
-			tempm[a + 3] = get(3) * m[a] + get(7) * m[a + 1] + get(11) * m[a + 2] + get(15) * m[a + 3];
-		}
+		if(m.length < LENGTH)
+			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
 		
-		set(tempm);
-		
-		return this;
+		return mult(new Matrix4(m));
 	}
 	
+	@TakeStruct
 	public Matrix4 mult(Matrix4 m) {
-		return mult(m.matrix);
+		Matrix4 temp = new Matrix4();
+		
+		for(int a = 0; a < LENGTH; a += 4) {
+			temp.put(a + 0, get(0) * m.matrix[a] + get(4) * m.matrix[a + 1] + get(8) * m.matrix[a + 2] + get(12) * m.matrix[a + 3]);
+			temp.put(a + 1, get(1) * m.matrix[a] + get(5) * m.matrix[a + 1] + get(9) * m.matrix[a + 2] + get(13) * m.matrix[a + 3]);
+			temp.put(a + 2, get(2) * m.matrix[a] + get(6) * m.matrix[a + 1] + get(10) * m.matrix[a + 2] + get(14) * m.matrix[a + 3]);
+			temp.put(a + 3, get(3) * m.matrix[a] + get(7) * m.matrix[a + 1] + get(11) * m.matrix[a + 2] + get(15) * m.matrix[a + 3]);
+		}
+		
+		return set(temp);
 	}
 	
 	@CopyStruct
@@ -174,13 +198,14 @@ public class Matrix4 {
 	}
 	
 	@CopyStruct
-	public Vector4 mult(Vector4 vec) {
+	public Vector4 mult4(Vector4 vec) {
 		return new Vector4(matrix[0] * vec.x() + matrix[4] * vec.y() + matrix[8] * vec.z() + matrix[12] * vec.w(),
 				matrix[1] * vec.x() + matrix[5] * vec.y() + matrix[9] * vec.z() + matrix[13] * vec.w(),
 				matrix[2] * vec.x() + matrix[6] * vec.y() + matrix[10] * vec.z() + matrix[14] * vec.w(),
 				matrix[3] * vec.x() + matrix[7] * vec.y() + matrix[11] * vec.z() + matrix[15] * vec.w());
 	}
 	
+	@TakeStruct
 	public Matrix4 transpose() {
 		float old = get(1);
 		put(1, get(4));
@@ -209,44 +234,50 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 translate(float x, float y, float z) {
-		Arrays.fill(tempmOp, 0);
+		Matrix4 temp = new Matrix4();
 		
-		tempmOp[0] = 1;
-		tempmOp[5] = 1;
-		tempmOp[10] = 1;
-		tempmOp[15] = 1;
+		temp.put(0, 1);
+		temp.put(5, 1);
+		temp.put(10, 1);
+		temp.put(15, 1);
 		
-		tempmOp[12] = x;
-		tempmOp[13] = y;
-		tempmOp[14] = z;
+		temp.put(12, x);
+		temp.put(13, y);
+		temp.put(14, z);
 		
-		return mult(tempmOp);
+		return mult(temp);
 	}
 	
+	@TakeStruct
 	public Matrix4 translate(Vector3 vec) {
 		return translate(vec.x(), vec.y(), vec.z());
 	}
 	
+	@TakeStruct
 	public Matrix4 scale(float f) {
 		return scale(f, f, f);
 	}
 	
+	@TakeStruct
 	public Matrix4 scale(float x, float y, float z) {
-		Arrays.fill(tempmOp, 0);
+		Matrix4 temp = new Matrix4();
 		
-		tempmOp[0] = x;
-		tempmOp[5] = y;
-		tempmOp[10] = z;
-		tempmOp[15] = 1;
+		temp.put(0, x);
+		temp.put(5, y);
+		temp.put(10, z);
+		temp.put(15, 1);
 		
-		return mult(tempmOp);
+		return mult(temp);
 	}
 	
+	@TakeStruct
 	public Matrix4 scale(Vector3 vec) {
 		return scale(vec.x(), vec.y(), vec.z());
 	}
 	
+	@TakeStruct
 	public Matrix4 rotate(float angle, float x, float y, float z) {
 		float cos = (float)Math.cos(angle);
 		float sin = (float)Math.sin(angle);
@@ -257,33 +288,36 @@ public class Matrix4 {
 		y /= len;
 		z /= len;
 		
-		Arrays.fill(tempmOp, 0);
+		Matrix4 temp = new Matrix4();
 		
-		tempmOp[0] = x * x * oneMinusCos + cos;
-		tempmOp[4] = x * y * oneMinusCos - z * sin;
-		tempmOp[8] = x * z * oneMinusCos + y * sin;
+		temp.put(0, x * x * oneMinusCos + cos);
+		temp.put(4, x * y * oneMinusCos - z * sin);
+		temp.put(8, x * z * oneMinusCos + y * sin);
 		
-		tempmOp[1] = y * x * oneMinusCos + z * sin;
-		tempmOp[5] = y * y * oneMinusCos + cos;
-		tempmOp[9] = y * z * oneMinusCos - x * sin;
+		temp.put(1, y * x * oneMinusCos + z * sin);
+		temp.put(5, y * y * oneMinusCos + cos);
+		temp.put(9, y * z * oneMinusCos - x * sin);
 		
-		tempmOp[2] = z * x * oneMinusCos - y * sin;
-		tempmOp[6] = z * y * oneMinusCos + x * sin;
-		tempmOp[10] = z * z * oneMinusCos + cos;
+		temp.put(2, z * x * oneMinusCos - y * sin);
+		temp.put(6, z * y * oneMinusCos + x * sin);
+		temp.put(10, z * z * oneMinusCos + cos);
 		
-		tempmOp[15] = 1;
+		temp.put(15, 1);
 		
-		return mult(tempmOp);
+		return mult(temp);
 	}
 	
+	@TakeStruct
 	public Matrix4 rotate(float angle, Vector3 vec) {
 		return rotate(angle, vec.x(), vec.y(), vec.z());
 	}
 	
+	@TakeStruct
 	public Matrix4 rotateDeg(float angle, float x, float y, float z) {
 		return rotate((float)Math.toRadians(angle), x, y, z);
 	}
 	
+	@TakeStruct
 	public Matrix4 rotateDeg(float angle, Vector3 vec) {
 		return rotate((float)Math.toRadians(angle), vec);
 	}
@@ -297,6 +331,7 @@ public class Matrix4 {
 		return get(0) * a - get(4) * b + get(8) * c - get(12) * d;
 	}
 	
+	@TakeStruct
 	public Matrix4 inverse() {
 		Matrix4 inv = new Matrix4();
 		
@@ -387,7 +422,9 @@ public class Matrix4 {
 	
 	public FloatBuffer toBuffer() {
 		direct.clear();
-		direct.put(matrix);
+		for(int a = 0; a < LENGTH; a++) {
+			direct.put(matrix[a]);
+		}
 		direct.flip();
 		return direct;
 	}

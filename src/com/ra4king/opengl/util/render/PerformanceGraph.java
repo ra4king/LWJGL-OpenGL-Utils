@@ -33,7 +33,6 @@ public class PerformanceGraph {
 	
 	private static ShaderProgram uiProgram;
 	
-	private Matrix4 projectionMatrix;
 	private int vbo, vao;
 	
 	private FloatBuffer graphData;
@@ -113,8 +112,6 @@ public class PerformanceGraph {
 		
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		RenderUtils.glBindVertexArray(0);
-		
-		projectionMatrix = new Matrix4().clearToOrtho(0, RenderUtils.getWidth(), 0, RenderUtils.getHeight(), 0, 1);
 	}
 	
 	public int getX() {
@@ -207,7 +204,7 @@ public class PerformanceGraph {
 		uiProgram.begin();
 		
 		glUniform4(uiProgram.getUniformLocation("color"), color.toBuffer());
-		glUniformMatrix4(uiProgram.getUniformLocation("projectionMatrix"), false, projectionMatrix.toBuffer());
+		glUniformMatrix4(uiProgram.getUniformLocation("projectionMatrix"), false, new Matrix4().clearToOrtho(0, RenderUtils.getWidth(), 0, RenderUtils.getHeight(), 0, 1).toBuffer());
 		
 		RenderUtils.glBindVertexArray(vao);
 		glDrawArrays(GL_LINES, 0, graphOffset / 2);
