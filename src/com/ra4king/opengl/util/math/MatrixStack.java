@@ -33,12 +33,7 @@ public class MatrixStack {
 	
 	public MatrixStack pushMatrix() {
 		if(++currIdx == stack.length) {
-			Matrix4[] temp = Struct.malloc(Matrix4.class, stack.length << 1);
-			for(int a = 0; a < currIdx; a++)
-				temp[a].set(stack[a]);
-			
-			Struct.free(stack);
-			stack = temp;
+			stack = Struct.realloc(Matrix4.class, stack, stack.length << 1);
 		}
 		
 		Struct.copy(Matrix4.class, stack[currIdx - 1], stack[currIdx]);
