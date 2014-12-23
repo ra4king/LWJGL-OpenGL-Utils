@@ -41,7 +41,7 @@ public class MatrixStack {
 			stack = temp;
 		}
 		
-		stack[currIdx].clearToIdentity();
+		Struct.copy(Matrix4.class, stack[currIdx - 1], stack[currIdx]);
 		
 		return this;
 	}
