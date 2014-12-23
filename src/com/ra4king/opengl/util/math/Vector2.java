@@ -79,7 +79,8 @@ public class Vector2 {
 	
 	@TakeStruct
 	public Vector2 set(Vector2 vec) {
-		return set(vec.x, vec.y);
+		Struct.copy(Vector2.class, vec, this);
+		return this;
 	}
 	
 	@TakeStruct

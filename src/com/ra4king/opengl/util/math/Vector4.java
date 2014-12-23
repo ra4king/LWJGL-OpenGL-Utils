@@ -137,7 +137,8 @@ public class Vector4 {
 	
 	@TakeStruct
 	public Vector4 set(Vector4 vec) {
-		return set(vec.x, vec.y, vec.z, vec.w);
+		Struct.copy(Vector4.class, vec, this);
+		return this;
 	}
 	
 	@TakeStruct

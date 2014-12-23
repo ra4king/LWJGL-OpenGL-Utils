@@ -5,6 +5,7 @@ import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
 
 import net.indiespot.struct.cp.CopyStruct;
+import net.indiespot.struct.cp.Struct;
 import net.indiespot.struct.cp.StructField;
 import net.indiespot.struct.cp.StructType;
 import net.indiespot.struct.cp.TakeStruct;
@@ -78,10 +79,7 @@ public class Matrix3 {
 	
 	@TakeStruct
 	public Matrix3 set(Matrix3 m) {
-		for(int a = 0; a < LENGTH; a++) {
-			matrix[a] = m.matrix[a];
-		}
-		
+		Struct.copy(Matrix3.class, m, this);
 		return this;
 	}
 	
