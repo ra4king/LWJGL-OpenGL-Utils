@@ -197,7 +197,7 @@ public class Vector3 {
 	}
 	
 	@TakeStruct
-	public Vector3 mult3(Vector3 vec) {
+	public Vector3 mult(Vector3 vec) {
 		return mult(vec.x, vec.y, vec.z);
 	}
 	

@@ -2,12 +2,12 @@ package com.ra4king.opengl.util.interpolators;
 
 import java.util.ArrayList;
 
-import com.ra4king.opengl.util.math.Vector;
+import com.ra4king.opengl.util.interpolators.vector.IVector;
 
 /**
  * @author Roi Atalla
  */
-public class TimedLinearInterpolatorVector<T extends Vector<T>> extends WeightedLinearInterpolatorVector<T> {
+public class TimedLinearInterpolatorVector<T extends IVector<T,?>> extends WeightedLinearInterpolatorVector<T> {
 	public void setValues(ArrayList<Data> data) {
 		setValues(data, true);
 	}
