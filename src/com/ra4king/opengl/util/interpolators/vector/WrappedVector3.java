@@ -5,6 +5,7 @@ import java.nio.FloatBuffer;
 import com.ra4king.opengl.util.math.Vector3;
 
 import net.indiespot.struct.cp.Struct;
+import net.indiespot.struct.cp.TakeStruct;
 
 /**
  * @author Roi Atalla
@@ -27,6 +28,7 @@ public class WrappedVector3 implements IVector<WrappedVector3,Vector3> {
 	}
 	
 	@Override
+	@TakeStruct
 	public Vector3 getVec() {
 		return vec;
 	}
