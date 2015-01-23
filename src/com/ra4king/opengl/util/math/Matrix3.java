@@ -51,6 +51,10 @@ public class Matrix3 {
 		return matrix[index];
 	}
 	
+	public float get(int col, int row) {
+		return matrix[col * 3 + row];
+	}
+	
 	@TakeStruct
 	public Matrix3 put(int index, float f) {
 		matrix[index] = f;
@@ -58,10 +62,16 @@ public class Matrix3 {
 	}
 	
 	@TakeStruct
+	public Matrix3 put(int col, int row, float f) {
+		matrix[col * 3 + row] = f;
+		return this;
+	}
+	
+	@TakeStruct
 	public Matrix3 putColumn(int index, Vector3 v) {
-		put(index * 3 + 0, v.x());
-		put(index * 3 + 1, v.y());
-		put(index * 3 + 2, v.z());
+		put(index, 0, v.x());
+		put(index, 1, v.y());
+		put(index, 2, v.z());
 		return this;
 	}
 	
@@ -86,9 +96,9 @@ public class Matrix3 {
 	@TakeStruct
 	public Matrix3 set4x4(Matrix4 m) {
 		for(int a = 0; a < 3; a++) {
-			put(a * 3 + 0, m.get(a * 4 + 0));
-			put(a * 3 + 1, m.get(a * 4 + 1));
-			put(a * 3 + 2, m.get(a * 4 + 2));
+			put(a, 0, m.get(a, 0));
+			put(a, 1, m.get(a, 1));
+			put(a, 2, m.get(a, 2));
 		}
 		
 		return this;
@@ -112,15 +122,15 @@ public class Matrix3 {
 	
 	@TakeStruct
 	public Matrix3 mult(Matrix3 m) {
-		float[] newm = new float[LENGTH];
+		Matrix3 temp = new Matrix3();
 		
-		for(int a = 0; a < LENGTH; a += 3) {
-			newm[a + 0] = get(0) * m.matrix[a] + get(3) * m.matrix[a + 1] + get(6) * m.matrix[a + 2];
-			newm[a + 1] = get(1) * m.matrix[a] + get(4) * m.matrix[a + 1] + get(7) * m.matrix[a + 2];
-			newm[a + 2] = get(2) * m.matrix[a] + get(5) * m.matrix[a + 1] + get(8) * m.matrix[a + 2];
+		for(int a = 0; a < 3; a++) {
+			temp.put(a, 0, get(0) * m.get(a, 0) + get(3) * m.get(a, 1) + get(6) * m.get(a, 2));
+			temp.put(a, 1, get(1) * m.get(a, 0) + get(4) * m.get(a, 1) + get(7) * m.get(a, 2));
+			temp.put(a, 2, get(2) * m.get(a, 0) + get(5) * m.get(a, 1) + get(8) * m.get(a, 2));
 		}
 		
-		set(newm);
+		set(temp);
 		
 		return this;
 	}

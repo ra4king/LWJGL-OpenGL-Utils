@@ -68,8 +68,9 @@ public class Matrix4 {
 	@TakeStruct
 	public Matrix4 clearToPerspective(float fovRad, float width, float height, float near, float far) {
 		float fov = 1 / (float)Math.tan(fovRad / 2);
-		return clear().put(0, fov / (width / height))
-				.put(5, fov).put(10, (far + near) / (near - far))
+		return clear().put(0, fov * (height / width))
+				.put(5, fov)
+				.put(10, (far + near) / (near - far))
 				.put(14, (2 * far * near) / (near - far))
 				.put(11, -1);
 	}
@@ -84,12 +85,12 @@ public class Matrix4 {
 	}
 	
 	public float get(int col, int row) {
-		return get(col * 4 + row);
+		return matrix[col * 4 + row];
 	}
 	
 	@CopyStruct
 	public Vector4 getColumn(int index) {
-		return new Vector4(get(index * 4 + 0), get(index * 4 + 1), get(index * 4 + 2), get(index * 4 + 3));
+		return new Vector4(get(index, 0), get(index, 1), get(index, 2), get(index, 3));
 	}
 	
 	@TakeStruct
@@ -99,28 +100,34 @@ public class Matrix4 {
 	}
 	
 	@TakeStruct
+	public Matrix4 put(int col, int row, float f) {
+		matrix[col * 4 + row] = f;
+		return this;
+	}
+	
+	@TakeStruct
 	public Matrix4 putColumn(int index, Vector4 v) {
-		put(index * 4 + 0, v.x());
-		put(index * 4 + 1, v.y());
-		put(index * 4 + 2, v.z());
-		put(index * 4 + 3, v.z());
+		put(index, 0, v.x());
+		put(index, 1, v.y());
+		put(index, 2, v.z());
+		put(index, 3, v.z());
 		return this;
 	}
 	
 	@TakeStruct
 	public Matrix4 putColumn3(int index, Vector3 v) {
-		put(index * 4 + 0, v.x());
-		put(index * 4 + 1, v.y());
-		put(index * 4 + 2, v.z());
+		put(index, 0, v.x());
+		put(index, 1, v.y());
+		put(index, 2, v.z());
 		return this;
 	}
 	
 	@TakeStruct
 	public Matrix4 putColumn(int index, Vector3 v, float w) {
-		put(index * 4 + 0, v.x());
-		put(index * 4 + 1, v.y());
-		put(index * 4 + 2, v.z());
-		put(index * 4 + 3, w);
+		put(index, 0, v.x());
+		put(index, 1, v.y());
+		put(index, 2, v.z());
+		put(index, 3, w);
 		return this;
 	}
 	
@@ -145,9 +152,9 @@ public class Matrix4 {
 	@TakeStruct
 	public Matrix4 set3x3(Matrix3 m) {
 		for(int a = 0; a < 3; a++) {
-			matrix[a * 4 + 0] = m.get(a * 3 + 0);
-			matrix[a * 4 + 1] = m.get(a * 3 + 1);
-			matrix[a * 4 + 2] = m.get(a * 3 + 2);
+			put(a, 0, m.get(a, 0));
+			put(a, 1, m.get(a, 1));
+			put(a, 2, m.get(a, 2));
 		}
 		
 		return this;
@@ -173,11 +180,11 @@ public class Matrix4 {
 	public Matrix4 mult(Matrix4 m) {
 		Matrix4 temp = new Matrix4();
 		
-		for(int a = 0; a < LENGTH; a += 4) {
-			temp.put(a + 0, get(0) * m.matrix[a] + get(4) * m.matrix[a + 1] + get(8) * m.matrix[a + 2] + get(12) * m.matrix[a + 3]);
-			temp.put(a + 1, get(1) * m.matrix[a] + get(5) * m.matrix[a + 1] + get(9) * m.matrix[a + 2] + get(13) * m.matrix[a + 3]);
-			temp.put(a + 2, get(2) * m.matrix[a] + get(6) * m.matrix[a + 1] + get(10) * m.matrix[a + 2] + get(14) * m.matrix[a + 3]);
-			temp.put(a + 3, get(3) * m.matrix[a] + get(7) * m.matrix[a + 1] + get(11) * m.matrix[a + 2] + get(15) * m.matrix[a + 3]);
+		for(int a = 0; a < 4; a++) {
+			temp.put(a, 0, get(0) * m.get(a, 0) + get(4) * m.get(a, 1) + get(8) * m.get(a, 2) + get(12) * m.get(a, 3));
+			temp.put(a, 1, get(1) * m.get(a, 0) + get(5) * m.get(a, 1) + get(9) * m.get(a, 2) + get(13) * m.get(a, 3));
+			temp.put(a, 2, get(2) * m.get(a, 0) + get(6) * m.get(a, 1) + get(10) * m.get(a, 2) + get(14) * m.get(a, 3));
+			temp.put(a, 3, get(3) * m.get(a, 0) + get(7) * m.get(a, 1) + get(11) * m.get(a, 2) + get(15) * m.get(a, 3));
 		}
 		
 		return set(temp);

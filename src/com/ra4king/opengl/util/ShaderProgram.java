@@ -14,6 +14,10 @@ import java.util.Map;
 public class ShaderProgram {
 	private int program;
 	
+	public ShaderProgram(String vertexShader) {
+		this(vertexShader, null);
+	}
+	
 	public ShaderProgram(String vertexShader, String fragmentShader) {
 		this(vertexShader, null, fragmentShader, null);
 	}
@@ -40,7 +44,8 @@ public class ShaderProgram {
 		glDeleteShader(vs);
 		if(gs != -1)
 			glDeleteShader(gs);
-		glDeleteShader(fs);
+		if(fs != -1)
+			glDeleteShader(fs);
 	}
 	
 	public ShaderProgram(String vertexShader, String[] transformFeedbackVaryings, boolean interleaved) {

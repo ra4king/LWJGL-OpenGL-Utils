@@ -50,16 +50,16 @@ public class Utils {
 	
 	@CopyStruct
 	public static Matrix4 lookAt(Vector3 eye, Vector3 center, Vector3 up) {
-		Vector3 f = new Vector3(center).sub(eye).normalize();
+		Vector3 w = new Vector3(center).sub(eye).normalize();
 		up = new Vector3(up).normalize();
 		
-		Vector3 s = f.cross(up);
-		Vector3 u = s.cross(f);
+		Vector3 u = w.cross(up);
+		Vector3 v = u.cross(w);
 		
 		return new Matrix4(new float[] {
-				s.x(), u.x(), -f.x(), 0,
-				s.y(), u.y(), -f.y(), 0,
-				s.z(), u.z(), -f.z(), 0,
+				u.x(), v.x(), -w.x(), 0,
+				u.y(), v.y(), -w.y(), 0,
+				u.z(), v.z(), -w.z(), 0,
 				0, 0, 0, 1
 		}).translate(new Vector3(eye).mult(-1));
 	}
