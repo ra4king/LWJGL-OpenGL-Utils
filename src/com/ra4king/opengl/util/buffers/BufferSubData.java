@@ -46,15 +46,12 @@ public class BufferSubData extends GLBuffer {
 		
 		isBound = false;
 		
-		if(!buffer.hasRemaining())
-			return;
-		
 		buffer.flip();
 		
 		if(orphan)
 			glBufferData(type, size, isStreaming ? GL_STREAM_DRAW : GL_STATIC_DRAW);
 		
-		glBufferSubData(type, buffer.position(), buffer);
+		glBufferSubData(type, 0, buffer);
 		glBindBuffer(type, 0);
 	}
 }

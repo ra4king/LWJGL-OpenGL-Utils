@@ -29,11 +29,12 @@ public class PolygonLoader {
 		for(int a = 0; a < cubeData.length / 2; a += 3) {
 			int position = (a / 3) * ((interleaved ? 3 : 0) + (vec4 ? 4 : 3));
 			
-			Vector4 pos;
-			if(modelMatrix == null)
-				pos = new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2] * sideLength.z(), 1);
-			else
-				pos = modelMatrix.mult4(new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2] * sideLength.z(), 1));
+			Vector4 pos = new Vector4();
+			if(modelMatrix == null) {
+				pos.set(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2] * sideLength.z(), 1);
+			} else {
+				modelMatrix.mult4(new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2] * sideLength.z(), 1), pos);
+			}
 			
 			buffer[position + 0] = pos.x();
 			buffer[position + 1] = pos.y();
@@ -68,11 +69,12 @@ public class PolygonLoader {
 		for(int a = 0; a < planeData.length / 2; a += 3) {
 			int position = (a / 3) * ((interleaved ? 3 : 0) + (vec4 ? 4 : 3));
 			
-			Vector4 pos;
-			if(modelMatrix == null)
-				pos = new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2], 1);
-			else
-				pos = modelMatrix.mult4(new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2], 1));
+			Vector4 pos = new Vector4();
+			if(modelMatrix == null) {
+				pos.set(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2], 1);
+			} else {
+				modelMatrix.mult4(new Vector4(center.x() + cubeData[a] * sideLength.x(), center.y() + cubeData[a + 1] * sideLength.y(), center.z() + cubeData[a + 2], 1), pos);
+			}
 			
 			buffer[position + 0] = pos.x();
 			buffer[position + 1] = pos.y();

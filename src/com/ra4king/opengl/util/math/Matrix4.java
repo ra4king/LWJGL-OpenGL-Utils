@@ -4,20 +4,15 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
-import net.indiespot.struct.cp.CopyStruct;
 import net.indiespot.struct.cp.Struct;
-import net.indiespot.struct.cp.StructField;
-import net.indiespot.struct.cp.StructType;
 import net.indiespot.struct.cp.TakeStruct;
 
 /**
  * @author Roi Atalla
  */
-@StructType
 public class Matrix4 {
 	public static final int LENGTH = 16;
 	
-	@StructField(length = LENGTH)
 	private float[] matrix;
 	
 	public Matrix4() {
@@ -27,8 +22,9 @@ public class Matrix4 {
 	public Matrix4(float[] m) {
 		this();
 		
-		if(m.length < LENGTH)
+		if(m.length < LENGTH) {
 			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
+		}
 		
 		set(m);
 	}
@@ -38,7 +34,6 @@ public class Matrix4 {
 		set(m);
 	}
 	
-	@TakeStruct
 	public Matrix4 clear() {
 		for(int a = 0; a < LENGTH; a++)
 			matrix[a] = 0;
@@ -46,36 +41,32 @@ public class Matrix4 {
 		return this;
 	}
 	
-	@TakeStruct
 	public Matrix4 clearToIdentity() {
 		return clear().put(0, 1)
-				.put(5, 1)
-				.put(10, 1)
-				.put(15, 1);
+		         .put(5, 1)
+		         .put(10, 1)
+		         .put(15, 1);
 	}
 	
-	@TakeStruct
 	public Matrix4 clearToOrtho(float left, float right, float bottom, float top, float near, float far) {
 		return clear().put(0, 2 / (right - left))
-				.put(5, 2 / (top - bottom))
-				.put(10, -2 / (far - near))
-				.put(12, -(right + left) / (right - left))
-				.put(13, -(top + bottom) / (top - bottom))
-				.put(14, -(far + near) / (far - near))
-				.put(15, 1);
+		         .put(5, 2 / (top - bottom))
+		         .put(10, -2 / (far - near))
+		         .put(12, -(right + left) / (right - left))
+		         .put(13, -(top + bottom) / (top - bottom))
+		         .put(14, -(far + near) / (far - near))
+		         .put(15, 1);
 	}
 	
-	@TakeStruct
 	public Matrix4 clearToPerspective(float fovRad, float width, float height, float near, float far) {
 		float fov = 1 / (float)Math.tan(fovRad / 2);
 		return clear().put(0, fov * (height / width))
-				.put(5, fov)
-				.put(10, (far + near) / (near - far))
-				.put(14, (2 * far * near) / (near - far))
-				.put(11, -1);
+		         .put(5, fov)
+		         .put(10, (far + near) / (near - far))
+		         .put(14, (2 * far * near) / (near - far))
+		         .put(11, -1);
 	}
 	
-	@TakeStruct
 	public Matrix4 clearToPerspectiveDeg(float fov, float width, float height, float near, float far) {
 		return clearToPerspective((float)Math.toRadians(fov), width, height, near, far);
 	}
@@ -88,24 +79,21 @@ public class Matrix4 {
 		return matrix[col * 4 + row];
 	}
 	
-	@CopyStruct
-	public Vector4 getColumn(int index) {
-		return new Vector4(get(index, 0), get(index, 1), get(index, 2), get(index, 3));
+	@TakeStruct
+	public Vector4 getColumn(int index, Vector4 result) {
+		return result.set(get(index, 0), get(index, 1), get(index, 2), get(index, 3));
 	}
 	
-	@TakeStruct
 	public Matrix4 put(int index, float f) {
 		matrix[index] = f;
 		return this;
 	}
 	
-	@TakeStruct
 	public Matrix4 put(int col, int row, float f) {
 		matrix[col * 4 + row] = f;
 		return this;
 	}
 	
-	@TakeStruct
 	public Matrix4 putColumn(int index, Vector4 v) {
 		put(index, 0, v.x());
 		put(index, 1, v.y());
@@ -114,7 +102,6 @@ public class Matrix4 {
 		return this;
 	}
 	
-	@TakeStruct
 	public Matrix4 putColumn3(int index, Vector3 v) {
 		put(index, 0, v.x());
 		put(index, 1, v.y());
@@ -122,7 +109,6 @@ public class Matrix4 {
 		return this;
 	}
 	
-	@TakeStruct
 	public Matrix4 putColumn(int index, Vector3 v, float w) {
 		put(index, 0, v.x());
 		put(index, 1, v.y());
@@ -131,10 +117,10 @@ public class Matrix4 {
 		return this;
 	}
 	
-	@TakeStruct
 	public Matrix4 set(float[] m) {
-		if(m.length < LENGTH)
+		if(m.length < LENGTH) {
 			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
+		}
 		
 		for(int a = 0; a < m.length && a < LENGTH; a++) {
 			matrix[a] = m[a];
@@ -143,13 +129,11 @@ public class Matrix4 {
 		return this;
 	}
 	
-	@TakeStruct
 	public Matrix4 set(Matrix4 m) {
 		Struct.copy(Matrix4.class, m, this);
 		return this;
 	}
 	
-	@TakeStruct
 	public Matrix4 set3x3(Matrix3 m) {
 		for(int a = 0; a < 3; a++) {
 			put(a, 0, m.get(a, 0));
@@ -160,7 +144,6 @@ public class Matrix4 {
 		return this;
 	}
 	
-	@TakeStruct
 	public Matrix4 mult(float f) {
 		for(int a = 0; a < LENGTH; a++)
 			put(a, get(a) * f);
@@ -168,15 +151,14 @@ public class Matrix4 {
 		return this;
 	}
 	
-	@TakeStruct
 	public Matrix4 mult(float[] m) {
-		if(m.length < LENGTH)
+		if(m.length < LENGTH) {
 			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
+		}
 		
 		return mult(new Matrix4(m));
 	}
 	
-	@TakeStruct
 	public Matrix4 mult(Matrix4 m) {
 		Matrix4 temp = new Matrix4();
 		
@@ -190,27 +172,19 @@ public class Matrix4 {
 		return set(temp);
 	}
 	
-	@CopyStruct
-	public Vector3 mult3(Vector3 vec) {
-		return mult(vec, 1);
-	}
-	
-	@CopyStruct
-	public Vector3 mult(Vector3 vec, float w) {
-		return new Vector3(get(0) * vec.x() + get(4) * vec.y() + get(8) * vec.z() + get(12) * w,
-				get(1) * vec.x() + get(5) * vec.y() + get(9) * vec.z() + get(13) * w,
-				get(2) * vec.x() + get(6) * vec.y() + get(10) * vec.z() + get(14) * w);
-	}
-	
-	@CopyStruct
-	public Vector4 mult4(Vector4 vec) {
-		return new Vector4(matrix[0] * vec.x() + matrix[4] * vec.y() + matrix[8] * vec.z() + matrix[12] * vec.w(),
-				matrix[1] * vec.x() + matrix[5] * vec.y() + matrix[9] * vec.z() + matrix[13] * vec.w(),
-				matrix[2] * vec.x() + matrix[6] * vec.y() + matrix[10] * vec.z() + matrix[14] * vec.w(),
-				matrix[3] * vec.x() + matrix[7] * vec.y() + matrix[11] * vec.z() + matrix[15] * vec.w());
+	@TakeStruct
+	public Vector3 mult3(Vector3 vec, float w, Vector3 result) {
+		return result.set4(mult4(new Vector4(vec, w), new Vector4()));
 	}
 	
 	@TakeStruct
+	public Vector4 mult4(Vector4 vec, Vector4 result) {
+		return result.set(matrix[0] * vec.x() + matrix[4] * vec.y() + matrix[8] * vec.z() + matrix[12] * vec.w(),
+		                   matrix[1] * vec.x() + matrix[5] * vec.y() + matrix[9] * vec.z() + matrix[13] * vec.w(),
+		                   matrix[2] * vec.x() + matrix[6] * vec.y() + matrix[10] * vec.z() + matrix[14] * vec.w(),
+		                   matrix[3] * vec.x() + matrix[7] * vec.y() + matrix[11] * vec.z() + matrix[15] * vec.w());
+	}
+	
 	public Matrix4 transpose() {
 		float old = get(1);
 		put(1, get(4));
@@ -239,7 +213,6 @@ public class Matrix4 {
 		return this;
 	}
 	
-	@TakeStruct
 	public Matrix4 translate(float x, float y, float z) {
 		Matrix4 temp = new Matrix4();
 		
@@ -255,17 +228,14 @@ public class Matrix4 {
 		return mult(temp);
 	}
 	
-	@TakeStruct
 	public Matrix4 translate(Vector3 vec) {
 		return translate(vec.x(), vec.y(), vec.z());
 	}
 	
-	@TakeStruct
 	public Matrix4 scale(float f) {
 		return scale(f, f, f);
 	}
 	
-	@TakeStruct
 	public Matrix4 scale(float x, float y, float z) {
 		Matrix4 temp = new Matrix4();
 		
@@ -277,12 +247,10 @@ public class Matrix4 {
 		return mult(temp);
 	}
 	
-	@TakeStruct
 	public Matrix4 scale(Vector3 vec) {
 		return scale(vec.x(), vec.y(), vec.z());
 	}
 	
-	@TakeStruct
 	public Matrix4 rotate(float angle, float x, float y, float z) {
 		float cos = (float)Math.cos(angle);
 		float sin = (float)Math.sin(angle);
@@ -312,17 +280,14 @@ public class Matrix4 {
 		return mult(temp);
 	}
 	
-	@TakeStruct
 	public Matrix4 rotate(float angle, Vector3 vec) {
 		return rotate(angle, vec.x(), vec.y(), vec.z());
 	}
 	
-	@TakeStruct
 	public Matrix4 rotateDeg(float angle, float x, float y, float z) {
 		return rotate((float)Math.toRadians(angle), x, y, z);
 	}
 	
-	@TakeStruct
 	public Matrix4 rotateDeg(float angle, Vector3 vec) {
 		return rotate((float)Math.toRadians(angle), vec);
 	}
@@ -336,7 +301,6 @@ public class Matrix4 {
 		return get(0) * a - get(4) * b + get(8) * c - get(12) * d;
 	}
 	
-	@TakeStruct
 	public Matrix4 inverse() {
 		Matrix4 inv = new Matrix4();
 		
@@ -363,7 +327,6 @@ public class Matrix4 {
 		return set(inv.transpose().mult(1 / determinant()));
 	}
 	
-	@CopyStruct
 	public Quaternion toQuaternion() {
 		float x = get(0) - get(5) - get(10);
 		float y = get(5) - get(0) - get(10);

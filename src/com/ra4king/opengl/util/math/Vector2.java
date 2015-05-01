@@ -93,12 +93,6 @@ public class Vector2 {
 		return set(vec.x(), vec.y());
 	}
 	
-	@TakeStruct
-	public Vector2 reset() {
-		x = y = 0;
-		return this;
-	}
-	
 	public float length() {
 		return (float)Math.sqrt(lengthSquared());
 	}
