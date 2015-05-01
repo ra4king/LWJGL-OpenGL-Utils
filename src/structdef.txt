@@ -1,5 +1,3 @@
-com.ra4king.opengl.util.math.Matrix3
-com.ra4king.opengl.util.math.Matrix4
 com.ra4king.opengl.util.math.Quaternion
 com.ra4king.opengl.util.math.Vector2
 com.ra4king.opengl.util.math.Vector3
