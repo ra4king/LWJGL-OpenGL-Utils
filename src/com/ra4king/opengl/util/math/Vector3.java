@@ -125,12 +125,6 @@ public class Vector3 {
 		return set(vec.x(), vec.y(), vec.z());
 	}
 	
-	@TakeStruct
-	public Vector3 reset() {
-		x = y = z = 0;
-		return this;
-	}
-	
 	public float length() {
 		return (float)Math.sqrt(lengthSquared());
 	}

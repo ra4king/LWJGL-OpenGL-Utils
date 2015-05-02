@@ -99,7 +99,9 @@ public class Quaternion {
 	
 	@TakeStruct
 	public Quaternion reset() {
-		x = y = z = 0;
+		x = 0;
+		y = 0;
+		z = 0;
 		w = 1;
 		return this;
 	}
@@ -204,19 +206,12 @@ public class Quaternion {
 		return normalize().conjugate();
 	}
 	
-	public void toMatrix(Matrix4 mat4) {
-		mat4.set(new float[] {
+	public Matrix4 toMatrix(Matrix4 mat4) {
+		return mat4.set(new float[] {
 				1 - 2 * y * y - 2 * z * z, 2 * x * y + 2 * w * z, 2 * x * z - 2 * w * y, 0,
 				2 * x * y - 2 * w * z, 1 - 2 * x * x - 2 * z * z, 2 * y * z + 2 * w * x, 0,
 				2 * x * z + 2 * w * y, 2 * y * z - 2 * w * x, 1 - 2 * x * x - 2 * y * y, 0,
 				0, 0, 0, 1,
 		});
-	}
-	
-	@CopyStruct
-	public Matrix4 toMatrix() {
-		Matrix4 temp = new Matrix4();
-		toMatrix(temp);
-		return temp;
 	}
 }

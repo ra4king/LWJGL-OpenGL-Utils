@@ -529,7 +529,7 @@ public class Scene {
 		private Vector3 translate = Struct.malloc(Vector3.class).set(0f);
 		
 		public Matrix4 getMatrix() {
-			return new Matrix4().clearToIdentity().translate(translate).mult(orient.toMatrix()).scale(scale);
+			return new Matrix4().clearToIdentity().translate(translate).mult(orient.toMatrix(new Matrix4())).scale(scale);
 		}
 	}
 	

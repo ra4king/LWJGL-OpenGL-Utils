@@ -116,7 +116,7 @@ public class MousePoles {
 		public Matrix4 calcMatrix() {
 			Matrix4 translateMat = new Matrix4().clearToIdentity();
 			translateMat.putColumn(3, po.position, 1);
-			return translateMat.mult(po.orientation.toMatrix());
+			return translateMat.mult(po.orientation.toMatrix(new Matrix4()));
 		}
 		
 		public void setRotationScale(float rotateScale) {
@@ -164,7 +164,7 @@ public class MousePoles {
 			if(view == null)
 				rotateWorldDegrees(rot, fromInitial);
 			else {
-				Quaternion viewQuat = view.calcMatrix().toQuaternion();
+				Quaternion viewQuat = view.calcMatrix().toQuaternion(new Quaternion());
 				po.orientation.set(new Quaternion(viewQuat).conjugate().mult(rot).mult(viewQuat).mult(fromInitial ? startDragOrient : po.orientation).normalize());
 			}
 		}
@@ -373,7 +373,7 @@ public class MousePoles {
 			mat.translate(0, 0, -currView.radius);
 			
 			Quaternion fullRotation = Utils.angleAxisDeg(currView.degSpinRotation, new Vector3(0, 0, 1)).mult(currView.orient);
-			mat.mult(fullRotation.toMatrix());
+			mat.mult(fullRotation.toMatrix(new Matrix4()));
 			
 			mat.translate(new Vector3(currView.targetPos).mult(-1));
 			
@@ -537,7 +537,7 @@ public class MousePoles {
 		}
 		
 		private void offsetTargetPos(Vector3 cameraOffset) {
-			currView.targetPos.add(calcMatrix().toQuaternion().conjugate().mult3(cameraOffset));
+			currView.targetPos.add(calcMatrix().toQuaternion(new Quaternion()).conjugate().mult3(cameraOffset));
 		}
 		
 		@Override

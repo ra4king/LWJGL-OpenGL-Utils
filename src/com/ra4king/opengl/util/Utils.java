@@ -48,7 +48,6 @@ public class Utils {
 		return f1 + (f2 - f1) * a;
 	}
 	
-	@CopyStruct
 	public static Matrix4 lookAt(Vector3 eye, Vector3 center, Vector3 up) {
 		Vector3 w = new Vector3(center).sub(eye).normalize();
 		up = new Vector3(up).normalize();

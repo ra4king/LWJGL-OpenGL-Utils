@@ -4,7 +4,6 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
-import net.indiespot.struct.cp.Struct;
 import net.indiespot.struct.cp.TakeStruct;
 
 /**
@@ -13,7 +12,7 @@ import net.indiespot.struct.cp.TakeStruct;
 public class Matrix4 {
 	public static final int LENGTH = 16;
 	
-	private float[] matrix;
+	private float[] matrix = new float[LENGTH];
 	
 	public Matrix4() {
 		clear();
@@ -130,7 +129,7 @@ public class Matrix4 {
 	}
 	
 	public Matrix4 set(Matrix4 m) {
-		Struct.copy(Matrix4.class, m, this);
+		System.arraycopy(m.matrix, 0, this.matrix, 0, LENGTH);
 		return this;
 	}
 	
@@ -327,7 +326,8 @@ public class Matrix4 {
 		return set(inv.transpose().mult(1 / determinant()));
 	}
 	
-	public Quaternion toQuaternion() {
+	@TakeStruct
+	public Quaternion toQuaternion(Quaternion res) {
 		float x = get(0) - get(5) - get(10);
 		float y = get(5) - get(0) - get(10);
 		float z = get(10) - get(0) - get(5);
@@ -353,8 +353,6 @@ public class Matrix4 {
 		
 		float biggestVal = (float)(Math.sqrt(biggest + 1) * 0.5);
 		float mult = 0.25f / biggestVal;
-		
-		Quaternion res = new Quaternion();
 		
 		switch(biggestIndex) {
 			case 0:

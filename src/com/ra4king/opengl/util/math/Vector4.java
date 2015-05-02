@@ -141,12 +141,6 @@ public class Vector4 {
 		return this;
 	}
 	
-	@TakeStruct
-	public Vector4 reset() {
-		x = y = z = w = 0;
-		return this;
-	}
-	
 	public float length() {
 		return (float)Math.sqrt(lengthSquared());
 	}

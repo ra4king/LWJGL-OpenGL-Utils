@@ -4,7 +4,6 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
-import net.indiespot.struct.cp.Struct;
 import net.indiespot.struct.cp.TakeStruct;
 
 /**
@@ -13,7 +12,7 @@ import net.indiespot.struct.cp.TakeStruct;
 public class Matrix3 {
 	public static final int LENGTH = 9;
 	
-	private float[] matrix;
+	private float[] matrix = new float[LENGTH];
 	
 	public Matrix3() {
 		clear();
@@ -77,7 +76,7 @@ public class Matrix3 {
 	}
 	
 	public Matrix3 set(Matrix3 m) {
-		Struct.copy(Matrix3.class, m, this);
+		System.arraycopy(m.matrix, 0, this.matrix, 0, LENGTH);
 		return this;
 	}
 	

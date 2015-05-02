@@ -1,6 +1,5 @@
 package com.ra4king.opengl.util.math;
 
-import net.indiespot.struct.cp.Struct;
 import net.indiespot.struct.cp.TakeStruct;
 
 /**
@@ -11,7 +10,9 @@ public class MatrixStack {
 	private int currIdx;
 	
 	public MatrixStack() {
-		stack = Struct.mallocArray(Matrix4.class, 10);
+		stack = new Matrix4[10];
+		stack[0] = new Matrix4();
+		
 		clear();
 	}
 	
@@ -33,10 +34,12 @@ public class MatrixStack {
 	
 	public MatrixStack pushMatrix() {
 		if(++currIdx == stack.length) {
-			stack = Struct.reallocArray(Matrix4.class, stack, stack.length << 1);
+			Matrix4[] temp = new Matrix4[stack.length << 1];
+			System.arraycopy(stack, 0, temp, 0, stack.length);
+			stack = temp;
 		}
 		
-		Struct.copy(Matrix4.class, stack[currIdx - 1], stack[currIdx]);
+		stack[currIdx] = new Matrix4(stack[currIdx - 1]);
 		
 		return this;
 	}
@@ -45,7 +48,7 @@ public class MatrixStack {
 		if(currIdx == 0)
 			throw new IllegalStateException("Already at the topmost matrix.");
 		
-		currIdx--;
+		stack[currIdx--] = null;
 		return this;
 	}
 }
