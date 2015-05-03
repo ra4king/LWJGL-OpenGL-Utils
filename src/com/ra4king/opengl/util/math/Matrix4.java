@@ -4,15 +4,20 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
+import net.indiespot.struct.cp.Struct;
+import net.indiespot.struct.cp.StructField;
+import net.indiespot.struct.cp.StructType;
 import net.indiespot.struct.cp.TakeStruct;
 
 /**
  * @author Roi Atalla
  */
+@StructType
 public class Matrix4 {
 	public static final int LENGTH = 16;
 	
-	private float[] matrix = new float[LENGTH];
+	@StructField(elements = LENGTH)
+	private float[] matrix;
 	
 	public Matrix4() {
 		clear();
@@ -20,11 +25,6 @@ public class Matrix4 {
 	
 	public Matrix4(float[] m) {
 		this();
-		
-		if(m.length < LENGTH) {
-			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
-		}
-		
 		set(m);
 	}
 	
@@ -33,6 +33,7 @@ public class Matrix4 {
 		set(m);
 	}
 	
+	@TakeStruct
 	public Matrix4 clear() {
 		for(int a = 0; a < LENGTH; a++)
 			matrix[a] = 0;
@@ -40,6 +41,7 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 clearToIdentity() {
 		return clear().put(0, 1)
 		         .put(5, 1)
@@ -47,6 +49,7 @@ public class Matrix4 {
 		         .put(15, 1);
 	}
 	
+	@TakeStruct
 	public Matrix4 clearToOrtho(float left, float right, float bottom, float top, float near, float far) {
 		return clear().put(0, 2 / (right - left))
 		         .put(5, 2 / (top - bottom))
@@ -57,6 +60,7 @@ public class Matrix4 {
 		         .put(15, 1);
 	}
 	
+	@TakeStruct
 	public Matrix4 clearToPerspective(float fovRad, float width, float height, float near, float far) {
 		float fov = 1 / (float)Math.tan(fovRad / 2);
 		return clear().put(0, fov * (height / width))
@@ -66,6 +70,7 @@ public class Matrix4 {
 		         .put(11, -1);
 	}
 	
+	@TakeStruct
 	public Matrix4 clearToPerspectiveDeg(float fov, float width, float height, float near, float far) {
 		return clearToPerspective((float)Math.toRadians(fov), width, height, near, far);
 	}
@@ -83,16 +88,19 @@ public class Matrix4 {
 		return result.set(get(index, 0), get(index, 1), get(index, 2), get(index, 3));
 	}
 	
+	@TakeStruct
 	public Matrix4 put(int index, float f) {
 		matrix[index] = f;
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 put(int col, int row, float f) {
 		matrix[col * 4 + row] = f;
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 putColumn(int index, Vector4 v) {
 		put(index, 0, v.x());
 		put(index, 1, v.y());
@@ -101,6 +109,7 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 putColumn3(int index, Vector3 v) {
 		put(index, 0, v.x());
 		put(index, 1, v.y());
@@ -108,6 +117,7 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 putColumn(int index, Vector3 v, float w) {
 		put(index, 0, v.x());
 		put(index, 1, v.y());
@@ -116,6 +126,7 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 set(float[] m) {
 		if(m.length < LENGTH) {
 			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
@@ -128,11 +139,13 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 set(Matrix4 m) {
-		System.arraycopy(m.matrix, 0, this.matrix, 0, LENGTH);
+		Struct.copy(Matrix4.class, m, this);
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 set3x3(Matrix3 m) {
 		for(int a = 0; a < 3; a++) {
 			put(a, 0, m.get(a, 0));
@@ -143,6 +156,7 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 mult(float f) {
 		for(int a = 0; a < LENGTH; a++)
 			put(a, get(a) * f);
@@ -150,6 +164,7 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 mult(float[] m) {
 		if(m.length < LENGTH) {
 			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
@@ -158,6 +173,7 @@ public class Matrix4 {
 		return mult(new Matrix4(m));
 	}
 	
+	@TakeStruct
 	public Matrix4 mult(Matrix4 m) {
 		Matrix4 temp = new Matrix4();
 		
@@ -184,6 +200,7 @@ public class Matrix4 {
 		                   matrix[3] * vec.x() + matrix[7] * vec.y() + matrix[11] * vec.z() + matrix[15] * vec.w());
 	}
 	
+	@TakeStruct
 	public Matrix4 transpose() {
 		float old = get(1);
 		put(1, get(4));
@@ -212,6 +229,7 @@ public class Matrix4 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix4 translate(float x, float y, float z) {
 		Matrix4 temp = new Matrix4();
 		
@@ -227,14 +245,17 @@ public class Matrix4 {
 		return mult(temp);
 	}
 	
+	@TakeStruct
 	public Matrix4 translate(Vector3 vec) {
 		return translate(vec.x(), vec.y(), vec.z());
 	}
 	
+	@TakeStruct
 	public Matrix4 scale(float f) {
 		return scale(f, f, f);
 	}
 	
+	@TakeStruct
 	public Matrix4 scale(float x, float y, float z) {
 		Matrix4 temp = new Matrix4();
 		
@@ -246,10 +267,12 @@ public class Matrix4 {
 		return mult(temp);
 	}
 	
+	@TakeStruct
 	public Matrix4 scale(Vector3 vec) {
 		return scale(vec.x(), vec.y(), vec.z());
 	}
 	
+	@TakeStruct
 	public Matrix4 rotate(float angle, float x, float y, float z) {
 		float cos = (float)Math.cos(angle);
 		float sin = (float)Math.sin(angle);
@@ -279,14 +302,17 @@ public class Matrix4 {
 		return mult(temp);
 	}
 	
+	@TakeStruct
 	public Matrix4 rotate(float angle, Vector3 vec) {
 		return rotate(angle, vec.x(), vec.y(), vec.z());
 	}
 	
+	@TakeStruct
 	public Matrix4 rotateDeg(float angle, float x, float y, float z) {
 		return rotate((float)Math.toRadians(angle), x, y, z);
 	}
 	
+	@TakeStruct
 	public Matrix4 rotateDeg(float angle, Vector3 vec) {
 		return rotate((float)Math.toRadians(angle), vec);
 	}
@@ -300,6 +326,7 @@ public class Matrix4 {
 		return get(0) * a - get(4) * b + get(8) * c - get(12) * d;
 	}
 	
+	@TakeStruct
 	public Matrix4 inverse() {
 		Matrix4 inv = new Matrix4();
 		

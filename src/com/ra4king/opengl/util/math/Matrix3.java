@@ -4,15 +4,20 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
+import net.indiespot.struct.cp.Struct;
+import net.indiespot.struct.cp.StructField;
+import net.indiespot.struct.cp.StructType;
 import net.indiespot.struct.cp.TakeStruct;
 
 /**
  * @author Roi Atalla
  */
+@StructType
 public class Matrix3 {
 	public static final int LENGTH = 9;
 	
-	private float[] matrix = new float[LENGTH];
+	@StructField(elements = LENGTH)
+	private float[] matrix;
 	
 	public Matrix3() {
 		clear();
@@ -28,6 +33,7 @@ public class Matrix3 {
 		set(m);
 	}
 	
+	@TakeStruct
 	public Matrix3 clear() {
 		for(int a = 0; a < LENGTH; a++)
 			matrix[a] = 0;
@@ -35,6 +41,7 @@ public class Matrix3 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix3 clearToIdentity() {
 		return clear().put(0, 1).put(4, 1).put(8, 1);
 	}
@@ -47,16 +54,19 @@ public class Matrix3 {
 		return matrix[col * 3 + row];
 	}
 	
+	@TakeStruct
 	public Matrix3 put(int index, float f) {
 		matrix[index] = f;
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix3 put(int col, int row, float f) {
 		matrix[col * 3 + row] = f;
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix3 putColumn(int index, Vector3 v) {
 		put(index, 0, v.x());
 		put(index, 1, v.y());
@@ -64,9 +74,11 @@ public class Matrix3 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix3 set(float[] m) {
-		if(m.length < LENGTH)
+		if(m.length < LENGTH) {
 			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
+		}
 		
 		for(int a = 0; a < m.length && a < LENGTH; a++) {
 			matrix[a] = m[a];
@@ -75,11 +87,13 @@ public class Matrix3 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix3 set(Matrix3 m) {
-		System.arraycopy(m.matrix, 0, this.matrix, 0, LENGTH);
+		Struct.copy(Matrix3.class, m, this);
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix3 set4x4(Matrix4 m) {
 		for(int a = 0; a < 3; a++) {
 			put(a, 0, m.get(a, 0));
@@ -90,6 +104,7 @@ public class Matrix3 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix3 mult(float f) {
 		for(int a = 0; a < LENGTH; a++)
 			put(a, get(a) * f);
@@ -97,13 +112,16 @@ public class Matrix3 {
 		return this;
 	}
 	
+	@TakeStruct
 	public Matrix3 mult(float[] m) {
-		if(m.length < LENGTH)
+		if(m.length < LENGTH) {
 			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
+		}
 		
 		return mult(new Matrix3(m));
 	}
 	
+	@TakeStruct
 	public Matrix3 mult(Matrix3 m) {
 		Matrix3 temp = new Matrix3();
 		
@@ -121,10 +139,11 @@ public class Matrix3 {
 	@TakeStruct
 	public Vector3 mult3(Vector3 vec, Vector3 result) {
 		return result.set(get(0) * vec.x() + get(3) * vec.y() + get(6) * vec.z(),
-				get(1) * vec.x() + get(4) * vec.y() + get(7) * vec.z(),
-				get(2) * vec.x() + get(5) * vec.y() + get(8) * vec.z());
+		                   get(1) * vec.x() + get(4) * vec.y() + get(7) * vec.z(),
+		                   get(2) * vec.x() + get(5) * vec.y() + get(8) * vec.z());
 	}
 	
+	@TakeStruct
 	public Matrix3 transpose() {
 		float old = get(1);
 		put(1, get(3));
@@ -143,9 +162,10 @@ public class Matrix3 {
 	
 	public float determinant() {
 		return +get(0) * get(4) * get(8) + get(3) * get(7) * get(2) + get(6) * get(1) * get(5)
-				- get(2) * get(4) * get(6) - get(5) * get(7) * get(0) - get(8) * get(1) * get(3);
+		         - get(2) * get(4) * get(6) - get(5) * get(7) * get(0) - get(8) * get(1) * get(3);
 	}
 	
+	@TakeStruct
 	public Matrix3 inverse() {
 		Matrix3 inv = new Matrix3();
 		

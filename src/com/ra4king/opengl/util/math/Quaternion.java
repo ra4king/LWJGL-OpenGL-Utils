@@ -206,6 +206,7 @@ public class Quaternion {
 		return normalize().conjugate();
 	}
 	
+	@TakeStruct
 	public Matrix4 toMatrix(Matrix4 mat4) {
 		return mat4.set(new float[] {
 				1 - 2 * y * y - 2 * z * z, 2 * x * y + 2 * w * z, 2 * x * z - 2 * w * y, 0,
