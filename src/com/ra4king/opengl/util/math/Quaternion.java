@@ -1,6 +1,5 @@
 package com.ra4king.opengl.util.math;
 
-import net.indiespot.struct.cp.CopyStruct;
 import net.indiespot.struct.cp.StructField;
 import net.indiespot.struct.cp.StructType;
 import net.indiespot.struct.cp.TakeStruct;
@@ -164,8 +163,8 @@ public class Quaternion {
 		return this;
 	}
 	
-	@CopyStruct
-	public Vector3 mult3(Vector3 v) {
+	@TakeStruct
+	public Vector3 mult3(Vector3 v, Vector3 result) {
 		Vector3 quatVector = new Vector3(x, y, z);
 		
 		Vector3 uv = quatVector.cross(v);
@@ -174,7 +173,7 @@ public class Quaternion {
 		uv.mult(w * 2);
 		uuv.mult(2);
 		
-		return new Vector3(v).add(uv).add(uuv);
+		return result.set(v).add(uv).add(uuv);
 	}
 	
 	@TakeStruct

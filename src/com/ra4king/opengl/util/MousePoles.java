@@ -537,7 +537,7 @@ public class MousePoles {
 		}
 		
 		private void offsetTargetPos(Vector3 cameraOffset) {
-			currView.targetPos.add(calcMatrix().toQuaternion(new Quaternion()).conjugate().mult3(cameraOffset));
+			currView.targetPos.add(calcMatrix().toQuaternion(new Quaternion()).conjugate().mult3(cameraOffset, new Vector3()));
 		}
 		
 		@Override
