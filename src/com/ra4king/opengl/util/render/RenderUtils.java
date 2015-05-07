@@ -15,6 +15,8 @@ import com.ra4king.opengl.util.math.Matrix4;
 import com.ra4king.opengl.util.math.Vector3;
 import com.ra4king.opengl.util.math.Vector4;
 
+import net.indiespot.struct.cp.Struct;
+
 /**
  * @author Roi Atalla
  */
@@ -116,64 +118,62 @@ public final class RenderUtils {
 		return GL33.glGetQueryObjecti64(queryObject, GL15.GL_QUERY_RESULT);
 	}
 	
+	
 	public static class FrustumCulling {
 		private enum Plane {
 			LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR;
-			public static final Plane[] values = values();
-			private static final Vector3 temp = new Vector3();
-			private Vector4 plane;
 			
-			public float distanceFromPoint(Vector3 point) {
-				return temp.set4(plane).dot(point) + plane.w();
-			}
+			static Plane[] values = values();
+		}
+		
+		private Vector4[] planes = Struct.mallocArray(Vector4.class, Plane.values.length);
+		
+		public float distanceFromPoint(Plane p, Vector3 point) {
+			Vector4 plane = planes[p.ordinal()];
+			return new Vector3().set4(plane).dot(point) + plane.w();
 		}
 		
 		public void setupPlanes(Matrix4 matrix) {
-			Plane.LEFT.plane = getPlane(matrix, 1);
-			Plane.RIGHT.plane = getPlane(matrix, -1);
-			Plane.BOTTOM.plane = getPlane(matrix, 2);
-			Plane.TOP.plane = getPlane(matrix, -2);
-			Plane.NEAR.plane = getPlane(matrix, 3);
-			Plane.FAR.plane = getPlane(matrix, -3);
+			getPlane(matrix, 1, planes[Plane.LEFT.ordinal()]);
+			getPlane(matrix, -1, planes[Plane.RIGHT.ordinal()]);
+			getPlane(matrix, 2, planes[Plane.BOTTOM.ordinal()]);
+			getPlane(matrix, -2, planes[Plane.TOP.ordinal()]);
+			getPlane(matrix, 3, planes[Plane.NEAR.ordinal()]);
+			getPlane(matrix, -3, planes[Plane.FAR.ordinal()]);
 		}
 		
-		private Vector4 getPlane(Matrix4 matrix, int row) {
+		private void getPlane(Matrix4 matrix, int row, Vector4 plane) {
 			int scale = row < 0 ? -1 : 1;
 			row = Math.abs(row) - 1;
 			
-			return new Vector4(
-					matrix.get(3) + scale * matrix.get(row),
-					matrix.get(7) + scale * matrix.get(row + 4),
-					matrix.get(11) + scale * matrix.get(row + 8),
-					matrix.get(15) + scale * matrix.get(row + 12)).normalize();
+			plane.set(matrix.get(3) + scale * matrix.get(row),
+			           matrix.get(7) + scale * matrix.get(row + 4),
+			           matrix.get(11) + scale * matrix.get(row + 8),
+			           matrix.get(15) + scale * matrix.get(row + 12)).normalize();
 		}
-		
-		private final Vector3 cubeTemp = new Vector3();
 		
 		public boolean isCubeInsideFrustum(Vector3 center, float sideLength) {
 			float half = sideLength * 0.5f;
-			return isRectPrismInsideFrustum(cubeTemp.set(center).sub(half, half, half), sideLength, sideLength, sideLength);
+			return isRectPrismInsideFrustum(new Vector3(center).sub(half, half, half), sideLength, sideLength, sideLength);
 		}
-		
-		private final Vector3 temp = new Vector3();
 		
 		public boolean isRectPrismInsideFrustum(Vector3 corner, float width, float height, float depth) {
 			for(Plane p : Plane.values) {
-				if(p.distanceFromPoint(temp.set(corner)) >= 0)
+				if(distanceFromPoint(p, corner) >= 0)
 					continue;
-				if(p.distanceFromPoint(temp.set(corner).add(width, 0, 0)) >= 0)
+				if(distanceFromPoint(p, new Vector3(corner).add(width, 0, 0)) >= 0)
 					continue;
-				if(p.distanceFromPoint(temp.set(corner).add(0, height, 0)) >= 0)
+				if(distanceFromPoint(p, new Vector3(corner).add(0, height, 0)) >= 0)
 					continue;
-				if(p.distanceFromPoint(temp.set(corner).add(0, 0, depth)) >= 0)
+				if(distanceFromPoint(p, new Vector3(corner).add(0, 0, depth)) >= 0)
 					continue;
-				if(p.distanceFromPoint(temp.set(corner).add(width, height, 0)) >= 0)
+				if(distanceFromPoint(p, new Vector3(corner).add(width, height, 0)) >= 0)
 					continue;
-				if(p.distanceFromPoint(temp.set(corner).add(width, 0, depth)) >= 0)
+				if(distanceFromPoint(p, new Vector3(corner).add(width, 0, depth)) >= 0)
 					continue;
-				if(p.distanceFromPoint(temp.set(corner).add(0, height, depth)) >= 0)
+				if(distanceFromPoint(p, new Vector3(corner).add(0, height, depth)) >= 0)
 					continue;
-				if(p.distanceFromPoint(temp.set(corner).add(width, height, depth)) >= 0)
+				if(distanceFromPoint(p, new Vector3(corner).add(width, height, depth)) >= 0)
 					continue;
 				
 				return false;
@@ -186,7 +186,7 @@ public final class RenderUtils {
 			boolean isIn = true;
 			
 			for(Plane p : Plane.values)
-				isIn &= p.distanceFromPoint(point) >= 0;
+				isIn &= distanceFromPoint(p, point) >= 0;
 			
 			return isIn;
 		}
