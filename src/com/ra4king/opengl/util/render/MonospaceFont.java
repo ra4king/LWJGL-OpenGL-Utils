@@ -100,7 +100,7 @@ public class MonospaceFont {
 	public void render(String str, float x, float y, float height, Vector4 color) {
 		fontProgram.begin();
 		
-		glUniformMatrix4(projectionMatrixUniform, false, new Matrix4().clearToOrtho(0, RenderUtils.getWidth(), RenderUtils.getHeight(), 0, 0, 1).toBuffer());
+		glUniformMatrix4(projectionMatrixUniform, false, new Matrix4().clearToOrtho(0, RenderUtils.getWidth(), 0, RenderUtils.getHeight(), 0, 1).toBuffer());
 		
 		glUniform4(colorUniform, color.toBuffer());
 		
@@ -130,22 +130,22 @@ public class MonospaceFont {
 			
 			float texPos = texCharWidth * index;
 			
-			buffer.put(lastLeft).put(y);
-			buffer.put(texPos).put(0f);
-			
-			buffer.put(lastLeft + charWidth).put(y + height);
-			buffer.put(texPos + texCharWidth).put(1f);
-			
 			buffer.put(lastLeft).put(y + height);
-			buffer.put(texPos).put(1f);
-			
-			buffer.put(lastLeft + charWidth).put(y + height);
-			buffer.put(texPos + texCharWidth).put(1f);
-			
-			buffer.put(lastLeft).put(y);
 			buffer.put(texPos).put(0f);
 			
 			buffer.put(lastLeft + charWidth).put(y);
+			buffer.put(texPos + texCharWidth).put(1f);
+			
+			buffer.put(lastLeft).put(y);
+			buffer.put(texPos).put(1f);
+			
+			buffer.put(lastLeft + charWidth).put(y);
+			buffer.put(texPos + texCharWidth).put(1f);
+			
+			buffer.put(lastLeft).put(y + height);
+			buffer.put(texPos).put(0f);
+			
+			buffer.put(lastLeft + charWidth).put(y + height);
 			buffer.put(texPos + texCharWidth).put(0f);
 			
 			charsDrawn++;
