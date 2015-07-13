@@ -124,46 +124,6 @@ public class Quaternion {
 	}
 	
 	@TakeStruct
-	public Quaternion add(float x, float y, float z, float w) {
-		this.x += x;
-		this.y += y;
-		this.z += z;
-		this.w += w;
-		
-		return this;
-	}
-	
-	@TakeStruct
-	public Quaternion add(Quaternion q) {
-		return add(q.x, q.y, q.z, q.w);
-	}
-	
-	@TakeStruct
-	public Quaternion sub(float x, float y, float z, float w) {
-		this.x -= x;
-		this.y -= y;
-		this.z -= z;
-		this.w -= w;
-		
-		return this;
-	}
-	
-	@TakeStruct
-	public Quaternion sub(Quaternion q) {
-		return sub(q.x, q.y, q.z, q.w);
-	}
-	
-	@TakeStruct
-	public Quaternion mult(float f) {
-		this.x *= f;
-		this.y *= f;
-		this.z *= f;
-		this.w *= f;
-		
-		return this;
-	}
-	
-	@TakeStruct
 	public Vector3 mult3(Vector3 v, Vector3 result) {
 		Vector3 quatVector = new Vector3(x, y, z);
 		
