@@ -1,43 +1,49 @@
 package com.ra4king.opengl.util.math;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-
 /**
  * @author Roi Atalla
  */
 public class MatrixStack {
-	private Deque<Matrix4> stack;
-	private Matrix4 current;
+	private Matrix4[] stack;
+	private int currIdx;
 	
 	public MatrixStack() {
-		current = new Matrix4().clearToIdentity();
-		stack = new ArrayDeque<>();
+		stack = new Matrix4[10];
+		clear();
 	}
 	
 	public MatrixStack clear() {
-		stack.clear();
-		current = null;
+		stack[0] = new Matrix4();
+		currIdx = 0;
 		return this;
 	}
 	
 	public Matrix4 getTop() {
-		return current;
+		return stack[currIdx];
 	}
 	
 	public MatrixStack setTop(Matrix4 m) {
-		current = m;
+		stack[currIdx].set(m);
 		return this;
 	}
 	
 	public MatrixStack pushMatrix() {
-		stack.push(current);
-		current = new Matrix4(current);
+		if(++currIdx == stack.length) {
+			Matrix4[] temp = new Matrix4[stack.length << 1];
+			System.arraycopy(stack, 0, temp, 0, stack.length);
+			stack = temp;
+		}
+		
+		stack[currIdx] = new Matrix4(stack[currIdx - 1]);
+		
 		return this;
 	}
 	
 	public MatrixStack popMatrix() {
-		current = stack.pop();
+		if(currIdx == 0)
+			throw new IllegalStateException("Already at the topmost matrix.");
+		
+		currIdx--;
 		return this;
 	}
 }

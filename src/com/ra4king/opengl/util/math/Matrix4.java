@@ -1,28 +1,26 @@
 package com.ra4king.opengl.util.math;
 
 import java.nio.FloatBuffer;
-import java.util.Arrays;
 
 import org.lwjgl.BufferUtils;
-
-import net.indiespot.struct.cp.CopyStruct;
 
 /**
  * @author Roi Atalla
  */
 public class Matrix4 {
+	public static final int LENGTH = 16;
+	
 	private float[] matrix;
 	
+	/**
+	 * Clears to identity
+	 */
 	public Matrix4() {
-		matrix = new float[16];
+		matrix = new float[LENGTH];
+		clearToIdentity();
 	}
 	
 	public Matrix4(float[] m) {
-		this();
-		set(m);
-	}
-	
-	public Matrix4(Matrix3 m) {
 		this();
 		set(m);
 	}
@@ -36,38 +34,44 @@ public class Matrix4 {
 		return new Matrix4(this);
 	}
 	
+	/**
+	 * Clears the matrix to all 0's
+	 */
 	public Matrix4 clear() {
-		Arrays.fill(matrix, 0);
+		for(int a = 0; a < LENGTH; a++)
+			matrix[a] = 0;
+		
 		return this;
 	}
 	
 	public Matrix4 clearToIdentity() {
 		return clear().put(0, 1)
-				.put(5, 1)
-				.put(10, 1)
-				.put(15, 1);
+		         .put(5, 1)
+		         .put(10, 1)
+		         .put(15, 1);
 	}
 	
 	public Matrix4 clearToOrtho(float left, float right, float bottom, float top, float near, float far) {
 		return clear().put(0, 2 / (right - left))
-				.put(5, 2 / (top - bottom))
-				.put(10, -2 / (far - near))
-				.put(12, -(right + left) / (right - left))
-				.put(13, -(top + bottom) / (top - bottom))
-				.put(14, -(far + near) / (far - near))
-				.put(15, 1);
+		         .put(5, 2 / (top - bottom))
+		         .put(10, -2 / (far - near))
+		         .put(12, -(right + left) / (right - left))
+		         .put(13, -(top + bottom) / (top - bottom))
+		         .put(14, -(far + near) / (far - near))
+		         .put(15, 1);
 	}
 	
 	public Matrix4 clearToPerspective(float fovRad, float width, float height, float near, float far) {
 		float fov = 1 / (float)Math.tan(fovRad / 2);
-		return clear().put(0, fov / (width / height))
-				.put(5, fov).put(10, (far + near) / (near - far))
-				.put(14, (2 * far * near) / (near - far))
-				.put(11, -1);
+		return clear().put(0, fov * (height / width))
+		         .put(5, fov)
+		         .put(10, (far + near) / (near - far))
+		         .put(14, (2 * far * near) / (near - far))
+		         .put(11, -1);
 	}
 	
-	public Matrix4 clearToPerspectiveDeg(float fov, float width, float height, float near, float far) {
-		return clearToPerspective((float)Math.toRadians(fov), width, height, near, far);
+	public Matrix4 clearToPerspectiveDeg(float fovDeg, float width, float height, float near, float far) {
+		return clearToPerspective((float)Math.toRadians(fovDeg), width, height, near, far);
 	}
 	
 	public float get(int index) {
@@ -75,12 +79,15 @@ public class Matrix4 {
 	}
 	
 	public float get(int col, int row) {
-		return get(col * 4 + row);
+		return matrix[col * 4 + row];
 	}
 	
-	@CopyStruct
 	public Vector4 getColumn(int index) {
-		return new Vector4(get(index * 4 + 0), get(index * 4 + 1), get(index * 4 + 2), get(index * 4 + 3));
+		return getColumn(index, new Vector4());
+	}
+	
+	public Vector4 getColumn(int index, Vector4 result) {
+		return result.set(get(index, 0), get(index, 1), get(index, 2), get(index, 3));
 	}
 	
 	public Matrix4 put(int index, float f) {
@@ -88,97 +95,103 @@ public class Matrix4 {
 		return this;
 	}
 	
+	public Matrix4 put(int col, int row, float f) {
+		matrix[col * 4 + row] = f;
+		return this;
+	}
+	
 	public Matrix4 putColumn(int index, Vector4 v) {
-		put(index * 4 + 0, v.x());
-		put(index * 4 + 1, v.y());
-		put(index * 4 + 2, v.z());
-		put(index * 4 + 3, v.z());
+		put(index, 0, v.x());
+		put(index, 1, v.y());
+		put(index, 2, v.z());
+		put(index, 3, v.z());
 		return this;
 	}
 	
 	public Matrix4 putColumn3(int index, Vector3 v) {
-		put(index * 4 + 0, v.x());
-		put(index * 4 + 1, v.y());
-		put(index * 4 + 2, v.z());
+		put(index, 0, v.x());
+		put(index, 1, v.y());
+		put(index, 2, v.z());
 		return this;
 	}
 	
 	public Matrix4 putColumn(int index, Vector3 v, float w) {
-		put(index * 4 + 0, v.x());
-		put(index * 4 + 1, v.y());
-		put(index * 4 + 2, v.z());
-		put(index * 4 + 3, w);
+		put(index, 0, v.x());
+		put(index, 1, v.y());
+		put(index, 2, v.z());
+		put(index, 3, w);
 		return this;
 	}
 	
 	public Matrix4 set(float[] m) {
-		if(m.length < matrix.length)
-			throw new IllegalArgumentException("float array must have at least " + matrix.length + " values.");
+		if(m.length < LENGTH) {
+			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
+		}
 		
-		System.arraycopy(m, 0, matrix, 0, matrix.length);
-		
+		System.arraycopy(m, 0, this.matrix, 0, LENGTH);
 		return this;
 	}
 	
 	public Matrix4 set(Matrix4 m) {
-		return set(m.matrix);
+		System.arraycopy(m.matrix, 0, this.matrix, 0, LENGTH);
+		return this;
 	}
 	
 	public Matrix4 set(Matrix3 m) {
 		for(int a = 0; a < 3; a++) {
-			matrix[a * 4 + 0] = m.get(a * 3 + 0);
-			matrix[a * 4 + 1] = m.get(a * 3 + 1);
-			matrix[a * 4 + 2] = m.get(a * 3 + 2);
+			put(a, 0, m.get(a, 0));
+			put(a, 1, m.get(a, 1));
+			put(a, 2, m.get(a, 2));
 		}
 		
 		return this;
 	}
 	
 	public Matrix4 mult(float f) {
-		for(int a = 0; a < matrix.length; a++)
+		for(int a = 0; a < LENGTH; a++)
 			put(a, get(a) * f);
 		
 		return this;
 	}
 	
-	private static final float[] tempm = new float[16];
-	private static final float[] tempmOp = new float[16];
-	
 	public Matrix4 mult(float[] m) {
-		for(int a = 0; a < matrix.length; a += 4) {
-			tempm[a + 0] = get(0) * m[a] + get(4) * m[a + 1] + get(8) * m[a + 2] + get(12) * m[a + 3];
-			tempm[a + 1] = get(1) * m[a] + get(5) * m[a + 1] + get(9) * m[a + 2] + get(13) * m[a + 3];
-			tempm[a + 2] = get(2) * m[a] + get(6) * m[a + 1] + get(10) * m[a + 2] + get(14) * m[a + 3];
-			tempm[a + 3] = get(3) * m[a] + get(7) * m[a + 1] + get(11) * m[a + 2] + get(15) * m[a + 3];
+		if(m.length < LENGTH) {
+			throw new IllegalArgumentException("float array must have at least " + LENGTH + " values.");
 		}
 		
-		set(tempm);
-		
-		return this;
+		return mult(new Matrix4(m));
 	}
 	
 	public Matrix4 mult(Matrix4 m) {
-		return mult(m.matrix);
+		Matrix4 temp = new Matrix4();
+		
+		for(int a = 0; a < 4; a++) {
+			temp.put(a, 0, get(0) * m.get(a, 0) + get(4) * m.get(a, 1) + get(8) * m.get(a, 2) + get(12) * m.get(a, 3));
+			temp.put(a, 1, get(1) * m.get(a, 0) + get(5) * m.get(a, 1) + get(9) * m.get(a, 2) + get(13) * m.get(a, 3));
+			temp.put(a, 2, get(2) * m.get(a, 0) + get(6) * m.get(a, 1) + get(10) * m.get(a, 2) + get(14) * m.get(a, 3));
+			temp.put(a, 3, get(3) * m.get(a, 0) + get(7) * m.get(a, 1) + get(11) * m.get(a, 2) + get(15) * m.get(a, 3));
+		}
+		
+		return set(temp);
 	}
 	
-	@CopyStruct
-	public Vector3 mult3(Vector3 vec) {
-		return mult(vec, 1);
-	}
-	
-	@CopyStruct
 	public Vector3 mult(Vector3 vec, float w) {
-		return new Vector3(get(0) * vec.x() + get(4) * vec.y() + get(8) * vec.z() + get(12) * w,
-				get(1) * vec.x() + get(5) * vec.y() + get(9) * vec.z() + get(13) * w,
-				get(2) * vec.x() + get(6) * vec.y() + get(10) * vec.z() + get(14) * w);
+		return mult(vec, w, new Vector3());
 	}
 	
-	@CopyStruct
+	public Vector3 mult(Vector3 vec, float w, Vector3 result) {
+		return result.set4(mult(new Vector4(vec, w), new Vector4()));
+	}
+	
 	public Vector4 mult(Vector4 vec) {
-		return new Vector4(matrix[0] * vec.x() + matrix[4] * vec.y() + matrix[8] * vec.z() + matrix[12] * vec.w(),
-				matrix[1] * vec.x() + matrix[5] * vec.y() + matrix[9] * vec.z() + matrix[13] * vec.w(),
-				matrix[2] * vec.x() + matrix[6] * vec.y() + matrix[10] * vec.z() + matrix[14] * vec.w(),
-				matrix[3] * vec.x() + matrix[7] * vec.y() + matrix[11] * vec.z() + matrix[15] * vec.w());
+		return mult(vec, new Vector4());
+	}
+	
+	public Vector4 mult(Vector4 vec, Vector4 result) {
+		return result.set(get(0) * vec.x() + get(4) * vec.y() + get(8) * vec.z() + get(12) * vec.w(),
+		                   get(1) * vec.x() + get(5) * vec.y() + get(9) * vec.z() + get(13) * vec.w(),
+		                   get(2) * vec.x() + get(6) * vec.y() + get(10) * vec.z() + get(14) * vec.w(),
+		                   get(3) * vec.x() + get(7) * vec.y() + get(11) * vec.z() + get(15) * vec.w());
 	}
 	
 	public Matrix4 transpose() {
@@ -210,18 +223,18 @@ public class Matrix4 {
 	}
 	
 	public Matrix4 translate(float x, float y, float z) {
-		Arrays.fill(tempmOp, 0);
+		Matrix4 temp = new Matrix4();
 		
-		tempmOp[0] = 1;
-		tempmOp[5] = 1;
-		tempmOp[10] = 1;
-		tempmOp[15] = 1;
+		temp.put(0, 1);
+		temp.put(5, 1);
+		temp.put(10, 1);
+		temp.put(15, 1);
 		
-		tempmOp[12] = x;
-		tempmOp[13] = y;
-		tempmOp[14] = z;
+		temp.put(12, x);
+		temp.put(13, y);
+		temp.put(14, z);
 		
-		return mult(tempmOp);
+		return mult(temp);
 	}
 	
 	public Matrix4 translate(Vector3 vec) {
@@ -233,14 +246,14 @@ public class Matrix4 {
 	}
 	
 	public Matrix4 scale(float x, float y, float z) {
-		Arrays.fill(tempmOp, 0);
+		Matrix4 temp = new Matrix4();
 		
-		tempmOp[0] = x;
-		tempmOp[5] = y;
-		tempmOp[10] = z;
-		tempmOp[15] = 1;
+		temp.put(0, x);
+		temp.put(5, y);
+		temp.put(10, z);
+		temp.put(15, 1);
 		
-		return mult(tempmOp);
+		return mult(temp);
 	}
 	
 	public Matrix4 scale(Vector3 vec) {
@@ -257,23 +270,23 @@ public class Matrix4 {
 		y /= len;
 		z /= len;
 		
-		Arrays.fill(tempmOp, 0);
+		Matrix4 temp = new Matrix4();
 		
-		tempmOp[0] = x * x * oneMinusCos + cos;
-		tempmOp[4] = x * y * oneMinusCos - z * sin;
-		tempmOp[8] = x * z * oneMinusCos + y * sin;
+		temp.put(0, x * x * oneMinusCos + cos);
+		temp.put(4, x * y * oneMinusCos - z * sin);
+		temp.put(8, x * z * oneMinusCos + y * sin);
 		
-		tempmOp[1] = y * x * oneMinusCos + z * sin;
-		tempmOp[5] = y * y * oneMinusCos + cos;
-		tempmOp[9] = y * z * oneMinusCos - x * sin;
+		temp.put(1, y * x * oneMinusCos + z * sin);
+		temp.put(5, y * y * oneMinusCos + cos);
+		temp.put(9, y * z * oneMinusCos - x * sin);
 		
-		tempmOp[2] = z * x * oneMinusCos - y * sin;
-		tempmOp[6] = z * y * oneMinusCos + x * sin;
-		tempmOp[10] = z * z * oneMinusCos + cos;
+		temp.put(2, z * x * oneMinusCos - y * sin);
+		temp.put(6, z * y * oneMinusCos + x * sin);
+		temp.put(10, z * z * oneMinusCos + cos);
 		
-		tempmOp[15] = 1;
+		temp.put(15, 1);
 		
-		return mult(tempmOp);
+		return mult(temp);
 	}
 	
 	public Matrix4 rotate(float angle, Vector3 vec) {
@@ -323,8 +336,11 @@ public class Matrix4 {
 		return set(inv.transpose().mult(1 / determinant()));
 	}
 	
-	@CopyStruct
 	public Quaternion toQuaternion() {
+		return toQuaternion(new Quaternion());
+	}
+	
+	public Quaternion toQuaternion(Quaternion result) {
 		float x = get(0) - get(5) - get(10);
 		float y = get(5) - get(0) - get(10);
 		float z = get(10) - get(0) - get(5);
@@ -351,43 +367,43 @@ public class Matrix4 {
 		float biggestVal = (float)(Math.sqrt(biggest + 1) * 0.5);
 		float mult = 0.25f / biggestVal;
 		
-		Quaternion res = new Quaternion();
-		
 		switch(biggestIndex) {
 			case 0:
-				res.w(biggestVal);
-				res.x((get(6) - get(9)) * mult);
-				res.y((get(8) - get(2)) * mult);
-				res.z((get(1) - get(4)) * mult);
+				result.w(biggestVal);
+				result.x((get(6) - get(9)) * mult);
+				result.y((get(8) - get(2)) * mult);
+				result.z((get(1) - get(4)) * mult);
 				break;
 			case 1:
-				res.w((get(6) - get(9)) * mult);
-				res.x(biggestVal);
-				res.y((get(1) + get(4)) * mult);
-				res.z((get(8) + get(2)) * mult);
+				result.w((get(6) - get(9)) * mult);
+				result.x(biggestVal);
+				result.y((get(1) + get(4)) * mult);
+				result.z((get(8) + get(2)) * mult);
 				break;
 			case 2:
-				res.w((get(8) - get(2)) * mult);
-				res.x((get(1) + get(4)) * mult);
-				res.y(biggestVal);
-				res.z((get(6) + get(9)) * mult);
+				result.w((get(8) - get(2)) * mult);
+				result.x((get(1) + get(4)) * mult);
+				result.y(biggestVal);
+				result.z((get(6) + get(9)) * mult);
 				break;
 			case 3:
-				res.w((get(1) - get(4)) * mult);
-				res.x((get(8) + get(2)) * mult);
-				res.y((get(6) + get(9)) * mult);
-				res.z(biggestVal);
+				result.w((get(1) - get(4)) * mult);
+				result.x((get(8) + get(2)) * mult);
+				result.y((get(6) + get(9)) * mult);
+				result.z(biggestVal);
 				break;
 		}
 		
-		return res;
+		return result;
 	}
 	
 	private final static FloatBuffer direct = BufferUtils.createFloatBuffer(16);
 	
 	public FloatBuffer toBuffer() {
 		direct.clear();
-		direct.put(matrix);
+		for(int a = 0; a < LENGTH; a++) {
+			direct.put(get(a));
+		}
 		direct.flip();
 		return direct;
 	}

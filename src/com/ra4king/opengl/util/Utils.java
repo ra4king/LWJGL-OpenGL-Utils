@@ -21,8 +21,6 @@ import com.ra4king.opengl.util.math.Vector2;
 import com.ra4king.opengl.util.math.Vector3;
 import com.ra4king.opengl.util.math.Vector4;
 
-import net.indiespot.struct.cp.CopyStruct;
-
 /**
  * @author Roi Atalla
  */
@@ -35,7 +33,6 @@ public class Utils {
 			throw new OpenGLException("OpenGL Error during " + event + ": " + gluErrorString(error));
 	}
 	
-	@CopyStruct
 	public static Quaternion angleAxisDeg(float angle, Vector3 vec) {
 		return new Quaternion((float)Math.toRadians(angle), vec);
 	}
@@ -135,7 +132,6 @@ public class Utils {
 		}
 	}
 	
-	@CopyStruct
 	public static Quaternion parseQuaternion(String s) {
 		String[] comp = StringUtil.split(s, ' ');
 		if(comp.length != 4)
@@ -150,7 +146,6 @@ public class Utils {
 		return quat;
 	}
 	
-	@CopyStruct
 	public static Vector4 parseVector4(String s) {
 		String[] comp = StringUtil.split(s, ' ');
 		if(comp.length != 4)
@@ -165,7 +160,6 @@ public class Utils {
 		return vec;
 	}
 	
-	@CopyStruct
 	public static Vector3 parseVector3(String s) throws NumberFormatException {
 		String[] comp = StringUtil.split(s, ' ');
 		if(comp.length != 3)
@@ -179,7 +173,6 @@ public class Utils {
 		return vec;
 	}
 	
-	@CopyStruct
 	public static Vector2 parseVector2(String s) throws NumberFormatException {
 		String[] comp = StringUtil.split(s, ' ');
 		if(comp.length != 2)

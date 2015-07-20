@@ -30,8 +30,6 @@ import com.ra4king.opengl.util.math.Vector3;
 import com.ra4king.opengl.util.scene.Scene.SceneNode.Variant;
 import com.ra4king.opengl.util.scene.binders.StateBinder;
 
-import net.indiespot.struct.cp.CopyStruct;
-import net.indiespot.struct.cp.Struct;
 import rosick.jglsdk.glimg.DdsLoader;
 import rosick.jglsdk.glimg.ImageSet;
 import rosick.jglsdk.glimg.TextureGenerator;
@@ -525,11 +523,11 @@ public class Scene {
 	
 	public static class Transform {
 		private Quaternion orient = new Quaternion();
-		private Vector3 scale = Struct.malloc(Vector3.class).set(1f);
-		private Vector3 translate = Struct.malloc(Vector3.class).set(0f);
+		private Vector3 scale = new Vector3(1f);
+		private Vector3 translate = new Vector3(0f);
 		
 		public Matrix4 getMatrix() {
-			return new Matrix4().clearToIdentity().translate(translate).mult(orient.toMatrix()).scale(scale);
+			return new Matrix4().translate(translate).mult(orient.toMatrix()).scale(scale);
 		}
 	}
 	
@@ -595,7 +593,6 @@ public class Scene {
 			nodeTransform.orient.set(orient).normalize();
 		}
 		
-		@CopyStruct
 		public Quaternion getOrient() {
 			return nodeTransform.orient;
 		}
@@ -630,8 +627,8 @@ public class Scene {
 		}
 		
 		private void render(Variant variant, Matrix4 baseMatrix) {
-			baseMatrix = baseMatrix.copy().mult(nodeTransform.getMatrix());
-			Matrix4 objectMatrix = baseMatrix.copy().mult(objectTransform.getMatrix());
+			baseMatrix = new Matrix4(baseMatrix).mult(nodeTransform.getMatrix());
+			Matrix4 objectMatrix = new Matrix4(baseMatrix).mult(objectTransform.getMatrix());
 			
 			variant.program.program.begin();
 			glUniformMatrix4(variant.program.matrixUniform, false, objectMatrix.toBuffer());

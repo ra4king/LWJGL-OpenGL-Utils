@@ -7,9 +7,6 @@ import com.ra4king.opengl.util.math.Quaternion;
 import com.ra4king.opengl.util.math.Vector2;
 import com.ra4king.opengl.util.math.Vector3;
 
-import net.indiespot.struct.cp.CopyStruct;
-import net.indiespot.struct.cp.Struct;
-
 /**
  * @author Roi Atalla
  * 
@@ -66,8 +63,8 @@ public class MousePoles {
 		}
 		
 		public ObjectData(Vector3 v, Quaternion q) {
-			position = Struct.malloc(Vector3.class).set(v);
-			orientation = Struct.malloc(Quaternion.class).set(q);
+			position = new Vector3(v);
+			orientation = new Quaternion(q);
 		}
 	}
 	
@@ -100,9 +97,9 @@ public class MousePoles {
 		private RotateMode rotateMode;
 		private boolean isDragging;
 		
-		private Vector2 prevMousePos = Struct.malloc(Vector2.class);
-		private Vector2 startDragMousePos = Struct.malloc(Vector2.class);
-		private Quaternion startDragOrient = Struct.malloc(Quaternion.class);
+		private Vector2 prevMousePos = new Vector2();
+		private Vector2 startDragMousePos = new Vector2();
+		private Quaternion startDragOrient = new Quaternion();
 		
 		public ObjectPole(ObjectData initialData, float rotateScale, MouseButton actionButton, ViewProvider lookAtProvider) {
 			this.view = lookAtProvider;
@@ -113,7 +110,7 @@ public class MousePoles {
 		}
 		
 		public Matrix4 calcMatrix() {
-			Matrix4 translateMat = new Matrix4().clearToIdentity();
+			Matrix4 translateMat = new Matrix4();
 			translateMat.putColumn(3, po.position, 1);
 			return translateMat.mult(po.orientation.toMatrix());
 		}
@@ -139,12 +136,10 @@ public class MousePoles {
 				po = new ObjectData(initialPo);
 		}
 		
-		@CopyStruct
 		private Quaternion calcRotationQuat(Axis axis, float angle) {
 			return calcRotationQuat(axis.ordinal(), angle);
 		}
 		
-		@CopyStruct
 		private Quaternion calcRotationQuat(int axis, float angle) {
 			return Utils.angleAxisDeg(angle, axisVectors[axis]);
 		}
@@ -250,12 +245,12 @@ public class MousePoles {
 		public float degSpinRotation;
 		
 		public ViewData(ViewData data) {
-			this(Struct.malloc(Vector3.class).set(data.targetPos), Struct.malloc(Quaternion.class).set(data.orient), data.radius, data.degSpinRotation);
+			this(new Vector3(data.targetPos), new Quaternion(data.orient), data.radius, data.degSpinRotation);
 		}
 		
 		public ViewData(Vector3 v, Quaternion q, float r, float d) {
-			targetPos = Struct.malloc(Vector3.class).set(v);
-			orient = Struct.malloc(Quaternion.class).set(q);
+			targetPos = new Vector3(v);
+			orient = new Quaternion(q);
 			radius = r;
 			degSpinRotation = d;
 		}
@@ -310,12 +305,12 @@ public class MousePoles {
 		}
 		
 		private Vector3[] offsets = {
-				Struct.malloc(Vector3.class).set(0, 1, 0),
-				Struct.malloc(Vector3.class).set(0, -1, 0),
-				Struct.malloc(Vector3.class).set(0, 0, -1),
-				Struct.malloc(Vector3.class).set(0, 0, 1),
-				Struct.malloc(Vector3.class).set(1, 0, 0),
-				Struct.malloc(Vector3.class).set(-1, 0, 0)
+				new Vector3(0, 1, 0),
+				new Vector3(0, -1, 0),
+				new Vector3(0, 0, -1),
+				new Vector3(0, 0, 1),
+				new Vector3(1, 0, 0),
+				new Vector3(-1, 0, 0)
 		};
 		
 		private ViewData currView;
@@ -329,8 +324,8 @@ public class MousePoles {
 		private RotateMode rotateMode;
 		
 		private float degStarDragSpin;
-		private Vector2 startDragMouseLoc = Struct.malloc(Vector2.class);
-		private Quaternion startDragOrient = Struct.malloc(Quaternion.class);
+		private Vector2 startDragMouseLoc = new Vector2();
+		private Quaternion startDragOrient = new Quaternion();
 		
 		public ViewPole(ViewData initialView, ViewScale viewScale, MouseButton actionButton) {
 			this(initialView, viewScale, actionButton, false);
@@ -346,7 +341,7 @@ public class MousePoles {
 		
 		@Override
 		public Matrix4 calcMatrix() {
-			Matrix4 mat = new Matrix4().clearToIdentity();
+			Matrix4 mat = new Matrix4();
 			
 			mat.translate(0, 0, -currView.radius);
 			
@@ -515,7 +510,7 @@ public class MousePoles {
 		}
 		
 		private void offsetTargetPos(Vector3 cameraOffset) {
-			currView.targetPos.add(calcMatrix().toQuaternion().conjugate().mult3(cameraOffset));
+			currView.targetPos.add(calcMatrix().toQuaternion().conjugate().mult(cameraOffset));
 		}
 		
 		@Override
