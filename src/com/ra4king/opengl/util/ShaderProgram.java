@@ -6,12 +6,14 @@ import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.opengl.GL32.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author Roi Atalla
  */
 public class ShaderProgram {
+	private HashMap<String,Integer> uniformMap;
 	private int program;
 	
 	public ShaderProgram(String vertexShader, String fragmentShader) {
@@ -41,6 +43,8 @@ public class ShaderProgram {
 		if(gs != -1)
 			glDeleteShader(gs);
 		glDeleteShader(fs);
+		
+		uniformMap = new HashMap<>();
 	}
 	
 	public ShaderProgram(String vertexShader, String[] transformFeedbackVaryings, boolean interleaved) {
@@ -152,11 +156,27 @@ public class ShaderProgram {
 	}
 	
 	public int getUniformLocation(String name) {
-		return glGetUniformLocation(program, name);
+		if(uniformMap.containsKey(name))
+			return uniformMap.get(name);
+		
+		int location = glGetUniformLocation(program, name);
+		if(location == -1)
+			throw new IllegalArgumentException("Uniform '" + name + "' does not exist.");
+		
+		uniformMap.put(name, location);
+		return location;
 	}
 	
 	public int getUniformBlockIndex(String name) {
-		return glGetUniformBlockIndex(program, name);
+		if(uniformMap.containsKey(name))
+			return uniformMap.get(name);
+		
+		int index = glGetUniformBlockIndex(program, name);
+		if(index == -1)
+			throw new IllegalArgumentException("Uniform block '" + name + "' does not exist.");
+		
+		uniformMap.put(name, index);
+		return index;
 	}
 	
 	public void begin() {
