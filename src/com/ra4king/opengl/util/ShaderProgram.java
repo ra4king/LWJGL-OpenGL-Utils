@@ -5,6 +5,7 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL31.*;
 import static org.lwjgl.opengl.GL32.*;
+import static org.lwjgl.opengl.GL43.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,8 +14,14 @@ import java.util.Map;
  * @author Roi Atalla
  */
 public class ShaderProgram {
-	private HashMap<String,Integer> uniformMap;
+	private HashMap<String,Integer> uniformMap = new HashMap<>();
 	private int program;
+	
+	public ShaderProgram(String computeShader) {
+		int cs = compileShader(computeShader, GL_COMPUTE_SHADER);
+		program = compileProgram(new int[] { cs }, null);
+		glDeleteShader(cs);
+	}
 	
 	public ShaderProgram(String vertexShader, String fragmentShader) {
 		this(vertexShader, null, fragmentShader, null);
@@ -33,7 +40,7 @@ public class ShaderProgram {
 		int gs = compileShader(geometryShader, GL_GEOMETRY_SHADER);
 		int fs = compileShader(fragmentShader, GL_FRAGMENT_SHADER);
 		
-		program = compileProgram(vs, gs, fs, (int program) -> {
+		program = compileProgram(new int[] { vs, gs, fs }, (int program) -> {
 			if(attributes != null)
 				for(int i : attributes.keySet())
 					glBindAttribLocation(program, i, attributes.get(i));
@@ -43,8 +50,6 @@ public class ShaderProgram {
 		if(gs != -1)
 			glDeleteShader(gs);
 		glDeleteShader(fs);
-		
-		uniformMap = new HashMap<>();
 	}
 	
 	public ShaderProgram(String vertexShader, String[] transformFeedbackVaryings, boolean interleaved) {
@@ -63,7 +68,7 @@ public class ShaderProgram {
 		int vs = compileShader(vertexShader, GL_VERTEX_SHADER);
 		int gs = compileShader(geometryShader, GL_GEOMETRY_SHADER);
 		
-		program = compileProgram(vs, gs, -1, (int program) -> {
+		program = compileProgram(new int[] { vs, gs }, (int program) -> {
 			if(attributes != null)
 				for(int i : attributes.keySet())
 					glBindAttribLocation(program, i, attributes.get(i));
@@ -77,18 +82,16 @@ public class ShaderProgram {
 			glDeleteShader(gs);
 	}
 	
-	private static interface PreLinkOperations {
+	private interface PreLinkOperations {
 		void preLink(int program);
 	}
 	
-	private static int compileProgram(int vs, int gs, int fs, PreLinkOperations preLink) {
+	private static int compileProgram(int[] shaders, PreLinkOperations preLink) {
 		int program = glCreateProgram();
 		
-		glAttachShader(program, vs);
-		if(gs != -1)
-			glAttachShader(program, gs);
-		if(fs != -1)
-			glAttachShader(program, fs);
+		for(int s : shaders)
+			if(s != -1)
+				glAttachShader(program, s);
 		
 		if(preLink != null)
 			preLink.preLink(program);
@@ -107,11 +110,9 @@ public class ShaderProgram {
 				System.out.println();
 		}
 		
-		glDetachShader(program, vs);
-		if(gs != -1)
-			glDetachShader(program, gs);
-		if(fs != -1)
-			glDetachShader(program, fs);
+		for(int s : shaders)
+			if(s != -1)
+				glDetachShader(program, s);
 		
 		return program;
 	}
@@ -147,8 +148,10 @@ public class ShaderProgram {
 			return "geometry";
 		if(shaderType == GL_FRAGMENT_SHADER)
 			return "fragment";
+		if(shaderType == GL_COMPUTE_SHADER)
+			return "compute";
 		
-		throw new IllegalArgumentException("Invalid shaderType, must be either GL_VERTEX_SHADER, GL_GEOMETRY_SHADER, or GL_FRAGMENT_SHADER");
+		throw new IllegalArgumentException("Invalid shaderType, must be either GL_VERTEX_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER, or GL_COMPUTE_SHADER");
 	}
 	
 	public int getProgram() {
