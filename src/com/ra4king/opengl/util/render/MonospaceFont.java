@@ -118,6 +118,7 @@ public class MonospaceFont {
 			
 			int index;
 			if((index = characters.indexOf(c)) == -1) {
+				lastLeft += charWidth;
 				continue;
 			}
 			
@@ -154,7 +155,6 @@ public class MonospaceFont {
 		
 		buffer.flip();
 		glBindBuffer(GL_ARRAY_BUFFER, fontVBO);
-		glBufferData(GL_ARRAY_BUFFER, 0, GL_STREAM_DRAW);
 		glBufferData(GL_ARRAY_BUFFER, buffer, GL_STREAM_DRAW);
 		
 		RenderUtils.glBindVertexArray(fontVAO);

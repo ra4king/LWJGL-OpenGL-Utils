@@ -118,7 +118,6 @@ public final class RenderUtils {
 		return GL33.glGetQueryObjecti64(queryObject, GL15.GL_QUERY_RESULT);
 	}
 	
-	
 	public static class FrustumCulling {
 		private enum Plane {
 			LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR;

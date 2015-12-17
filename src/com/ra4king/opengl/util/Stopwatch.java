@@ -190,17 +190,29 @@ public class Stopwatch {
 	public static double getTimePerFrame(String name) {
 		TimePeriod period = allTimePeriods.get(name);
 		
+		if(period == null) {
+			return 0.0;
+		}
+		
 		return period.lastTotalTime / (1e6 * period.lastCount);
 	}
 	
 	public static double getTotalFrames(String name) {
 		TimePeriod period = allTimePeriods.get(name);
 		
+		if(period == null) {
+			return 0.0;
+		}
+		
 		return period.lastCount;
 	}
 	
 	public static double getTotalTime(String name) {
 		TimePeriod period = allTimePeriods.get(name);
+		
+		if(period == null) {
+			return 0.0;
+		}
 		
 		return period.lastTotalTime / 1e6;
 	}

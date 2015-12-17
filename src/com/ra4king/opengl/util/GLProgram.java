@@ -14,7 +14,8 @@ import org.lwjgl.opengl.PixelFormat;
 public abstract class GLProgram {
 	private int fps, lastFps;
 	
-	private boolean printDebug;
+	private boolean printDebug = true;
+	private boolean checkError = true;
 	
 	public GLProgram(boolean vsync) {
 		try {
@@ -45,8 +46,8 @@ public abstract class GLProgram {
 	
 	/**
 	 * Returns the target FPS
-	 * 
-	 * @return
+	 *
+	 * @return target FPS
 	 */
 	public int getFPS() {
 		return fps;
@@ -59,12 +60,20 @@ public abstract class GLProgram {
 		return lastFps;
 	}
 	
-	public void setPrintDebug(boolean printDebug) {
+	public void printDebug(boolean printDebug) {
 		this.printDebug = printDebug;
 	}
 	
-	public boolean isPrintDebug() {
+	public boolean isDebugPrinted() {
 		return printDebug;
+	}
+	
+	public void checkError(boolean checkError) {
+		this.checkError = checkError;
+	}
+	
+	public boolean isErrorChecked() {
+		return checkError;
 	}
 	
 	public final void run() {
@@ -88,7 +97,7 @@ public abstract class GLProgram {
 	}
 	
 	public final void run(int major, int minor, boolean core, PixelFormat format) {
-		run(format, core ? new ContextAttribs(major, minor).withProfileCore(core) : new ContextAttribs(major, minor));
+		run(format, new ContextAttribs(major, minor).withProfileCore(core));
 	}
 	
 	public final void run(PixelFormat format) {
@@ -114,11 +123,15 @@ public abstract class GLProgram {
 		try {
 			init();
 			
-			Utils.checkGLError("init");
+			if(checkError) {
+				Utils.checkGLError("init");
+			}
 			
 			resized();
 			
-			Utils.checkGLError("resized");
+			if(checkError) {
+				Utils.checkGLError("resized");
+			}
 			
 			long lastTime, lastFpsTime;
 			lastTime = lastFpsTime = System.nanoTime();
@@ -150,7 +163,9 @@ public abstract class GLProgram {
 				Display.update();
 				Stopwatch.stop();
 				
-				Utils.checkGLError("render");
+				if(checkError) {
+					Utils.checkGLError("render");
+				}
 				
 				frames++;
 				if(System.nanoTime() - lastFpsTime >= 1e9) {
