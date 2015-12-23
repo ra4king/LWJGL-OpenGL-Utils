@@ -122,7 +122,7 @@ public final class RenderUtils {
 		private enum Plane {
 			LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR;
 			
-			static Plane[] values = values();
+			final static Plane[] values = values();
 		}
 		
 		private Vector4[] planes = Struct.mallocArray(Vector4.class, Plane.values.length);

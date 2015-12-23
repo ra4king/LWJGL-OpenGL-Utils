@@ -53,8 +53,8 @@ public class Utils {
 		Vector3 w = new Vector3(center).sub(eye).normalize();
 		up = new Vector3(up).normalize();
 		
-		Vector3 u = w.cross(up);
-		Vector3 v = u.cross(w);
+		Vector3 u = w.cross(up, new Vector3());
+		Vector3 v = u.cross(w, new Vector3());
 		
 		return new Matrix4(new float[] {
 				u.x(), v.x(), -w.x(), 0,

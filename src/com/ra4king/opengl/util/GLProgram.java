@@ -85,7 +85,7 @@ public abstract class GLProgram {
 	}
 	
 	public final void run(boolean core, PixelFormat format) {
-		run(format, core ? new ContextAttribs(3, 3).withProfileCore(true) : null);
+		run(format, core ? new ContextAttribs(3, 2).withProfileCore(true) : null);
 	}
 	
 	public final void run(int major, int minor) {

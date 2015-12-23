@@ -4,7 +4,6 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.BufferUtils;
 
-import net.indiespot.struct.cp.CopyStruct;
 import net.indiespot.struct.cp.Struct;
 import net.indiespot.struct.cp.StructField;
 import net.indiespot.struct.cp.StructType;
@@ -146,9 +145,9 @@ public class Vector3 {
 		return x * vec.x + y * vec.y + z * vec.z;
 	}
 	
-	@CopyStruct
-	public Vector3 cross(Vector3 vec) {
-		return new Vector3(y * vec.z - vec.y * z, z * vec.x - vec.z * x, x * vec.y - vec.x * y);
+	@TakeStruct
+	public Vector3 cross(Vector3 vec, Vector3 res) {
+		return res.set(y * vec.z - vec.y * z, z * vec.x - vec.z * x, x * vec.y - vec.x * y);
 	}
 	
 	@TakeStruct

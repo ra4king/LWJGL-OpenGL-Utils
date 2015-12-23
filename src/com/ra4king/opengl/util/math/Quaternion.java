@@ -127,8 +127,8 @@ public class Quaternion {
 	public Vector3 mult3(Vector3 v, Vector3 result) {
 		Vector3 quatVector = new Vector3(x, y, z);
 		
-		Vector3 uv = quatVector.cross(v);
-		Vector3 uuv = quatVector.cross(uv);
+		Vector3 uv = quatVector.cross(v, new Vector3());
+		Vector3 uuv = quatVector.cross(uv, new Vector3());
 		
 		uv.mult(w * 2);
 		uuv.mult(2);
