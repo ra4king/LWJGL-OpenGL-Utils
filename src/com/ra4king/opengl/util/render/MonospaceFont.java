@@ -76,7 +76,7 @@ public class MonospaceFont {
 		
 		font.fontProgram.begin();
 		glUniform1i(font.fontProgram.getUniformLocation("fontTex"), 0);
-		glUniform1f(font.fontProgram.getUniformLocation("texCharWidth"), (float)charWidth / characters.length());
+		//glUniform1f(font.fontProgram.getUniformLocation("texCharWidth"), (float)charWidth / characters.length());
 		font.fontProgram.end();
 		
 		font.fontVAO = glGenVertexArrays();
@@ -98,6 +98,8 @@ public class MonospaceFont {
 	private static FloatBuffer buffer = BufferUtils.createFloatBuffer(100 * 4 * 6);
 	
 	public void render(String str, float x, float y, float height, Vector4 color) {
+		glDisable(GL_DEPTH_TEST);
+		
 		fontProgram.begin();
 		
 		glUniformMatrix4(projectionMatrixUniform, false, new Matrix4().clearToOrtho(0, RenderUtils.getWidth(), 0, RenderUtils.getHeight(), 0, 1).toBuffer());
@@ -163,5 +165,7 @@ public class MonospaceFont {
 		glBindTexture(GL_TEXTURE_2D, fontTex);
 		
 		glDrawArrays(GL_TRIANGLES, 0, charsDrawn * 6);
+		
+		glEnable(GL_DEPTH_TEST);
 	}
 }
