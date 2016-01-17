@@ -20,7 +20,7 @@ public class Matrix4 {
 	private float[] matrix;
 	
 	public Matrix4() {
-		clear();
+		clearToIdentity();
 	}
 	
 	public Matrix4(float[] m) {
