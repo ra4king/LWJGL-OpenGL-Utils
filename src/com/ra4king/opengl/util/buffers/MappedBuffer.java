@@ -16,7 +16,7 @@ public class MappedBuffer extends GLBuffer {
 	@Override
 	public ByteBuffer bind(int offset, int size) {
 		glBindBuffer(type, name);
-		return glMapBufferRange(type, offset, size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT, null);
+		return glMapBufferRange(type, offset, size, GL_MAP_WRITE_BIT | (offset == 0 && size == this.size ? GL_MAP_INVALIDATE_BUFFER_BIT : GL_MAP_INVALIDATE_RANGE_BIT) | GL_MAP_UNSYNCHRONIZED_BIT, null);
 	}
 	
 	@Override
