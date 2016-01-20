@@ -24,13 +24,15 @@ public abstract class GLBuffer {
 		init();
 	}
 	
-	public static GLBuffer createBuffer(int type, int size, boolean isStreaming) {
+	public static GLBuffer createBuffer(int type, int size, boolean resizable, boolean isStreaming) {
 		if(isStreaming) {
-			if(GLContext.getCapabilities().GL_ARB_buffer_storage)
-				return new BufferStorage(type, size, isStreaming, 1);
+			if(!resizable && GLContext.getCapabilities().GL_ARB_buffer_storage) {
+				return new BufferStorage(type, size, true, 1);
+			}
 			
-			if(GLContext.getCapabilities().GL_ARB_map_buffer_range)
-				return new MappedBuffer(type, size, isStreaming);
+			if(GLContext.getCapabilities().GL_ARB_map_buffer_range) {
+				return new MappedBuffer(type, size, true);
+			}
 		}
 		
 		return new BufferSubData(type, size, isStreaming, true);
@@ -51,6 +53,10 @@ public abstract class GLBuffer {
 	protected void init() {
 		glBindBuffer(type, name);
 		glBufferData(type, size, isStreaming ? GL_STREAM_DRAW : GL_STATIC_DRAW);
+	}
+	
+	public ByteBuffer bind() {
+		return bind(0, size);
 	}
 	
 	public abstract ByteBuffer bind(int offset, int size);
