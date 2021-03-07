@@ -1,59 +1,46 @@
 package com.ra4king.opengl.util.math;
 
-import net.indiespot.struct.cp.Struct;
-import net.indiespot.struct.cp.TakeStruct;
+import java.util.ArrayList;
 
 /**
  * @author Roi Atalla
  */
 public class MatrixStack {
-	private Matrix4[] stack;
+	private ArrayList<Matrix4> stack = new ArrayList<>();
 	private int currIdx;
-	
+
 	public MatrixStack() {
-		stack = Struct.mallocArray(Matrix4.class, 10);
 		clear();
 	}
-	
-	protected void finalize() throws Throwable {
-		try {
-			Struct.free(stack);
-		}
-		finally {
-			super.finalize();
-		}
-	}
-	
+
 	public MatrixStack clear() {
-		stack[0].clearToIdentity();
+		stack.clear();
+		stack.add(new Matrix4());
 		currIdx = 0;
 		return this;
 	}
-	
-	@TakeStruct
+
 	public Matrix4 getTop() {
-		return stack[currIdx];
+		return stack.get(currIdx);
 	}
-	
+
 	public MatrixStack setTop(Matrix4 m) {
-		stack[currIdx].set(m);
+		stack.get(currIdx).set(m);
 		return this;
 	}
-	
+
 	public MatrixStack pushMatrix() {
-		if(++currIdx == stack.length) {
-			stack = Struct.reallocArray(Matrix4.class, stack, stack.length << 1);
-		}
-		
-		Struct.copy(Matrix4.class, stack[currIdx - 1], stack[currIdx]);
-		
+		stack.add(new Matrix4(getTop()));
+		currIdx++;
 		return this;
 	}
-	
+
 	public MatrixStack popMatrix() {
-		if(currIdx == 0)
-			throw new IllegalStateException("Already at the topmost matrix.");
-		
+		if (currIdx == 0) {
+			throw new IllegalStateException("Already at the bottom of the stack.");
+		}
+
+		stack.remove(currIdx);
 		currIdx--;
 		return this;
 	}

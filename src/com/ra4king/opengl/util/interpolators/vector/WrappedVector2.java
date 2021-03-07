@@ -4,9 +4,6 @@ import java.nio.FloatBuffer;
 
 import com.ra4king.opengl.util.math.Vector2;
 
-import net.indiespot.struct.cp.Struct;
-import net.indiespot.struct.cp.TakeStruct;
-
 /**
  * @author Roi Atalla
  */
@@ -14,7 +11,7 @@ public class WrappedVector2 implements IVector<WrappedVector2,Vector2> {
 	private Vector2 vec;
 	
 	public WrappedVector2() {
-		vec = Struct.malloc(Vector2.class).set(0);
+		vec = new Vector2();
 	}
 	
 	public WrappedVector2(WrappedVector2 wv) {
@@ -28,7 +25,6 @@ public class WrappedVector2 implements IVector<WrappedVector2,Vector2> {
 	}
 	
 	@Override
-	@TakeStruct
 	public Vector2 getVec() {
 		return vec;
 	}
@@ -36,15 +32,6 @@ public class WrappedVector2 implements IVector<WrappedVector2,Vector2> {
 	@Override
 	public WrappedVector2 copy() {
 		return new WrappedVector2(this);
-	}
-	
-	@Override
-	protected void finalize() throws Throwable {
-		try {
-			Struct.free(vec);
-		} finally {
-			super.finalize();
-		}
 	}
 	
 	@Override

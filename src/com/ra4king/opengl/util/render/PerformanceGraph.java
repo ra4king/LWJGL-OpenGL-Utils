@@ -1,8 +1,24 @@
 package com.ra4king.opengl.util.render;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_LINES;
+import static org.lwjgl.opengl.GL11.GL_LINE_STRIP;
+import static org.lwjgl.opengl.GL11.glDisable;
+import static org.lwjgl.opengl.GL11.glDrawArrays;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.GL_STREAM_DRAW;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferSubData;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glUniform4;
+import static org.lwjgl.opengl.GL20.glUniformMatrix4;
+import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 
 import java.nio.FloatBuffer;
 import java.util.function.Supplier;
@@ -14,31 +30,28 @@ import com.ra4king.opengl.util.Utils;
 import com.ra4king.opengl.util.math.Matrix4;
 import com.ra4king.opengl.util.math.Vector4;
 
-import net.indiespot.struct.cp.Struct;
-import net.indiespot.struct.cp.TakeStruct;
-
 /**
  * @author Roi Atalla
  */
 public class PerformanceGraph {
 	private Supplier<? extends Number> stepValueSupplier;
 	private float maxValue;
-	
+
 	private int x, y;
 	private int width, height;
 	private int maxSteps;
 	private int stepWidth;
-	
-	private Vector4 color = Struct.malloc(Vector4.class);
-	
+
+	private Vector4 color = new Vector4();
+
 	private static ShaderProgram uiProgram;
-	
+
 	private int vbo, vao;
-	
+
 	private FloatBuffer graphData;
 	private int graphOffset;
 	private int stepCount;
-	
+
 	/**
 	 * Creates a PerformanceGraph at location (x,y) with size (maxSteps*stepWidth, graphHeight).
 	 * The origin (0,0) is at the top left corner of the window.
@@ -68,15 +81,6 @@ public class PerformanceGraph {
 		this.setColor(color);
 	}
 	
-	@Override
-	protected void finalize() throws Throwable {
-		try {
-			Struct.free(color);
-		} finally {
-			super.finalize();
-		}
-	}
-	
 	private static void initProgram() {
 		uiProgram = new ShaderProgram(Utils.readFully(PerformanceGraph.class.getResourceAsStream(RenderUtils.SHADERS_PATH + "perf_graph.vert")),
 				Utils.readFully(PerformanceGraph.class.getResourceAsStream(RenderUtils.SHADERS_PATH + "perf_graph.frag")));
@@ -95,21 +99,21 @@ public class PerformanceGraph {
 				getX(), getY(),
 				getX() + getWidth(), getY()
 		};
-		
+
 		graphOffset = graph.length;
-		
+
 		graphData = BufferUtils.createFloatBuffer(getMaxSteps() * 2);
 		stepCount = 0;
-		
+
 		vbo = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, (graphOffset + graphData.capacity()) * Float.BYTES, GL_STREAM_DRAW);
-		
-		glBufferSubData(GL_ARRAY_BUFFER, 0, (FloatBuffer)BufferUtils.createFloatBuffer(graph.length).put(graph).flip());
-		
+
+		glBufferSubData(GL_ARRAY_BUFFER, 0, BufferUtils.createFloatBuffer(graph.length).put(graph).flip());
+
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, 0);
-		
+
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		RenderUtils.glBindVertexArray(0);
 	}
@@ -138,7 +142,6 @@ public class PerformanceGraph {
 		this.maxValue = maxValue;
 	}
 	
-	@TakeStruct
 	public Vector4 getColor() {
 		return color;
 	}

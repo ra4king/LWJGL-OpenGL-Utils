@@ -15,8 +15,6 @@ import com.ra4king.opengl.util.math.Matrix4;
 import com.ra4king.opengl.util.math.Vector3;
 import com.ra4king.opengl.util.math.Vector4;
 
-import net.indiespot.struct.cp.Struct;
-
 /**
  * @author Roi Atalla
  */
@@ -121,17 +119,23 @@ public final class RenderUtils {
 	public static class FrustumCulling {
 		private enum Plane {
 			LEFT, RIGHT, BOTTOM, TOP, NEAR, FAR;
-			
+
 			final static Plane[] values = values();
 		}
-		
-		private Vector4[] planes = Struct.mallocArray(Vector4.class, Plane.values.length);
-		
+
+		private Vector4[] planes = new Vector4[Plane.values.length];
+
+		public FrustumCulling() {
+			for (int i = 0; i < planes.length; i++) {
+				planes[i] = new Vector4();
+			}
+		}
+
 		public float distanceFromPoint(Plane p, Vector3 point) {
 			Vector4 plane = planes[p.ordinal()];
 			return new Vector3().set4(plane).dot(point) + plane.w();
 		}
-		
+
 		public void setupPlanes(Matrix4 matrix) {
 			getPlane(matrix, 1, planes[Plane.LEFT.ordinal()]);
 			getPlane(matrix, -1, planes[Plane.RIGHT.ordinal()]);

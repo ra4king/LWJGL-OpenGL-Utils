@@ -1,11 +1,13 @@
 package com.ra4king.opengl.util;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.util.glu.GLU.*;
+import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
+import static org.lwjgl.opengl.GL11.glGetError;
+import static org.lwjgl.util.glu.GLU.gluErrorString;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -21,8 +23,6 @@ import com.ra4king.opengl.util.math.Vector2;
 import com.ra4king.opengl.util.math.Vector3;
 import com.ra4king.opengl.util.math.Vector4;
 
-import net.indiespot.struct.cp.CopyStruct;
-
 /**
  * @author Roi Atalla
  */
@@ -35,7 +35,6 @@ public class Utils {
 			throw new OpenGLException("OpenGL Error during " + event + ": " + gluErrorString(error));
 	}
 	
-	@CopyStruct
 	public static Quaternion angleAxisDeg(float angle, Vector3 vec) {
 		return new Quaternion((float)Math.toRadians(angle), vec);
 	}
@@ -48,7 +47,6 @@ public class Utils {
 		return f1 + (f2 - f1) * a;
 	}
 	
-	@CopyStruct
 	public static Matrix4 lookAt(Vector3 eye, Vector3 center, Vector3 up) {
 		Vector3 w = new Vector3(center).sub(eye).normalize();
 		up = new Vector3(up).normalize();
@@ -123,20 +121,20 @@ public class Utils {
 	}
 	
 	public static String readFully(InputStream is) {
-		try(BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
 			StringBuilder s = new StringBuilder();
 			String l;
-			
-			while((l = reader.readLine()) != null)
+
+			while ((l = reader.readLine()) != null) {
 				s.append(l).append('\n');
-			
+			}
+
 			return s.toString();
-		} catch(Exception exc) {
+		} catch (Exception exc) {
 			throw new RuntimeException("Failure reading input stream", exc);
 		}
 	}
 	
-	@CopyStruct
 	public static Quaternion parseQuaternion(String s) {
 		String[] comp = StringUtil.split(s, ' ');
 		if(comp.length != 4)
@@ -151,7 +149,6 @@ public class Utils {
 		return quat;
 	}
 	
-	@CopyStruct
 	public static Vector4 parseVector4(String s) {
 		String[] comp = StringUtil.split(s, ' ');
 		if(comp.length != 4)
@@ -166,7 +163,6 @@ public class Utils {
 		return vec;
 	}
 	
-	@CopyStruct
 	public static Vector3 parseVector3(String s) throws NumberFormatException {
 		String[] comp = StringUtil.split(s, ' ');
 		if(comp.length != 3)
@@ -180,7 +176,6 @@ public class Utils {
 		return vec;
 	}
 	
-	@CopyStruct
 	public static Vector2 parseVector2(String s) throws NumberFormatException {
 		String[] comp = StringUtil.split(s, ' ');
 		if(comp.length != 2)
